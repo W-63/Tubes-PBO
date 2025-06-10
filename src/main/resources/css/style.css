@@ -1,0 +1,686 @@
+.root {
+    -fx-background-color: #1e1e2f;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: white;
+}
+
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.input-field {
+    -fx-background-color: #2c2c3c;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-padding: 10;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #444;
+    -fx-border-width: 1;
+}
+
+.login-button {
+    -fx-background-color: #0f9d58;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.login-button:hover {
+    -fx-background-color: #0b7d45;
+}
+
+.header-bar {
+    -fx-background-color: #2a2a40;
+    -fx-padding: 10;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-buttons .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 6 12;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+}
+
+.nav-buttons .button:hover {
+    -fx-background-color: #3a3a5c;
+}
+
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.input-field {
+    -fx-pref-width: 250px;
+    -fx-font-size: 14px;
+    -fx-background-color: #333;
+    -fx-text-fill: white;
+}
+
+.login-button, .main-button {
+    -fx-pref-width: 250px;
+    -fx-background-color: #5c6bc0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+AnchorPane {
+    -fx-background-color: #1e1e2f;
+}
+
+.title-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.main-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 10px;
+}
+
+
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.main-button {
+    -fx-font-size: 16px;
+    -fx-pref-width: 200px;
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20 10 20;
+}
+
+.main-button:hover {
+    -fx-background-color: #45a049;
+}
+
+.input-field {
+    -fx-background-color: #333;
+    -fx-text-fill: #fff;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+}
+
+.logout-button {
+    -fx-background-color: #d32f2f; /* Merah */
+}
+
+.logout-button:hover {
+    -fx-background-color: #b71c1c;
+}
+
+.main-anchor-pane {
+    -fx-background-color: #f4f7f9; /* Latar belakang utama yang lembut */
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Warna teks judul yang lebih gelap dan modern */
+    -fx-padding-bottom: 10px;
+}
+
+/* --- Styling untuk Form Input --- */
+.input-form-container {
+    -fx-background-color: #ffffff; /* Kontainer form dengan latar putih */
+    -fx-padding: 25px;
+    -fx-border-radius: 12px; /* Sudut lebih bulat */
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0.2, 0, 3); /* Bayangan halus */
+}
+
+.form-section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+    -fx-padding-bottom: 15px;
+    -fx-border-color: transparent transparent #e0e0e0 transparent; /* Garis bawah tipis */
+    -fx-border-width: 1px;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555e68; /* Warna label yang lebih lembut */
+    -fx-padding-bottom: 6px;
+}
+
+.form-input {
+    -fx-background-color: #fdfdfd; /* Latar input sedikit berbeda dari kontainer form */
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #a0a0a0;
+    -fx-border-color: #dfe3e8; /* Border yang lebih halus */
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 12px; /* Padding lebih nyaman */
+}
+
+.form-input:focused {
+    -fx-border-color: #0078d7; /* Warna aksen biru Microsoft saat fokus */
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,120,215,0.25), 6, 0, 0, 0);
+}
+
+/* Styling khusus untuk ComboBox */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8px 0 0;
+}
+.combo-box .arrow {
+    -fx-background-color: #0078d7; /* Warna panah biru */
+    -fx-shape: "M0 0 L4 4 L8 0 Z"; /* Bentuk panah sederhana */
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dfe3e8;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-padding: 8px 12px;
+}
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #eef5fd; /* Hover biru muda */
+    -fx-text-fill: #005a9e;
+}
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+}
+
+/* Styling khusus untuk DatePicker */
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8px 0 0;
+}
+.date-picker .arrow {
+     -fx-background-color: #0078d7;
+     -fx-shape: "M5,8 L5,10 L10,10 L10,15 L8,15 L8,12 L3,12 L3,10 L8,10 L8,8 Z"; /* Icon kalender sederhana */
+     -fx-scale-x: 0.7;
+     -fx-scale-y: 0.7;
+}
+.date-picker-popup {
+    -fx-border-color: #0078d7;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #f0f6fc;
+}
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #eef5fd;
+}
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+}
+
+
+/* --- Styling untuk Tombol --- */
+.button-primary {
+    -fx-background-color: #0078d7; /* Biru Microsoft */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,120,215,0.3), 5, 0.1, 0, 1);
+}
+.button-primary:hover {
+    -fx-background-color: #005a9e; /* Biru lebih gelap saat hover */
+}
+.button-primary:pressed {
+    -fx-background-color: #004c87;
+    -fx-effect: none;
+}
+
+.button-danger {
+    -fx-background-color: #e74c3c; /* Merah modern */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.3), 5, 0.1, 0, 1);
+}
+.button-danger:hover {
+    -fx-background-color: #c0392b;
+}
+.button-danger:pressed {
+    -fx-background-color: #a93226;
+    -fx-effect: none;
+}
+
+.button-secondary {
+    -fx-background-color: #bdc3c7; /* Abu-abu untuk tombol sekunder */
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+.button-secondary:hover {
+    -fx-background-color: #95a5a6;
+}
+
+
+/* --- Styling untuk TableView --- */
+.table-section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+    -fx-padding-bottom: 10px;
+}
+
+.todo-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 12px; /* Sudut lebih bulat untuk tabel */
+    -fx-background-radius: 12px;
+    -fx-selection-bar-non-focused: #e6f3ff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0.15, 0, 2);
+}
+
+.todo-table .column-header-background {
+    -fx-background-color: #f8f9fa; /* Header kolom dengan warna sedikit berbeda */
+    -fx-padding: 12px 0px; /* Padding untuk header */
+    -fx-border-color: transparent transparent #dfe3e8 transparent;
+    -fx-border-width: 1.5px;
+}
+
+.todo-table .column-header .label {
+    -fx-text-fill: #34495e; /* Warna teks header */
+    -fx-font-weight: bold;
+    -fx-font-size: 13px; /* Ukuran font header sedikit lebih kecil */
+    -fx-padding: 0 0 0 10px; /* Padding kiri untuk teks header */
+    -fx-alignment: CENTER_LEFT;
+}
+
+.todo-table .filler { /* Menghilangkan border kanan pada header terakhir */
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: transparent transparent #dfe3e8 transparent;
+    -fx-border-width: 1.5px;
+}
+
+
+.todo-table .table-cell {
+    -fx-padding: 14px 10px; /* Padding dalam sel lebih besar */
+    -fx-border-color: transparent transparent #f1f3f5 transparent; /* Garis pemisah antar baris yang sangat halus */
+    -fx-border-width: 1px;
+    -fx-text-fill: #495057;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14px;
+}
+
+.todo-table .table-row-cell:empty { /* Sembunyikan garis untuk baris kosong */
+    -fx-border-color: transparent;
+}
+.todo-table .table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+
+
+.todo-table .table-row-cell:selected {
+    -fx-background-color: #dcf4ff; /* Warna biru sangat muda saat baris dipilih */
+    -fx-text-fill: #2c3e50;
+}
+.todo-table .table-row-cell:selected .table-cell{
+    -fx-text-fill: #2c3e50; /* Pastikan teks sel juga berubah warna */
+}
+
+
+/* Styling CheckBox di dalam TableCell */
+.todo-table .check-box-table-cell { /* Tengahkan checkbox */
+    -fx-alignment: CENTER;
+}
+
+.todo-table .check-box-table-cell .check-box {
+    -fx-cursor: hand;
+    -fx-padding: 0; /* Hapus padding default checkbox */
+}
+.todo-table .check-box-table-cell .check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #adb5bd;
+    -fx-border-radius: 4px; /* Sudut box sedikit bulat */
+    -fx-background-radius: 4px;
+    -fx-pref-width: 18px; /* Ukuran box checkbox */
+    -fx-pref-height: 18px;
+}
+.todo-table .check-box-table-cell .check-box:selected .box {
+    -fx-background-color: #0078d7; /* Warna box saat terpilih */
+    -fx-border-color: #0078d7;
+}
+.todo-table .check-box-table-cell .check-box .mark {
+    -fx-shape: "M13.73,4.33A1,1,0,0,0,12.27,5.79l-5.3,5.3-2.12-2.12a1,1,0,0,0-1.41,1.41l2.83,2.83a1,1,0,0,0,1.41,0l6-6A1,1,0,0,0,13.73,4.33Z"; /* Bentuk centang modern */
+    -fx-background-color: white; /* Warna centang */
+    -fx-scale-x: 0.7; /* Sesuaikan ukuran centang */
+    -fx-scale-y: 0.7;
+}
+.todo-table .check-box-table-cell .check-box:focused .box {
+     -fx-border-color: #0078d7;
+     -fx-effect: dropshadow(three-pass-box, rgba(0,120,215,0.25), 3, 0, 0, 0);
+}
+
+/* --- Penyesuaian Layout Umum --- */
+.form-actions {
+    -fx-padding-top: 10px;
+}
+
+.table-actions {
+    -fx-padding-top: 10px;
+}
+
+/* Tambahkan ini ke modern_style.css Anda */
+
+.home-navigation-container {
+    /* Bisa ditambahkan style khusus jika perlu, misal padding atau border */
+}
+
+.home-nav-button {
+    -fx-background-color: #2980b9; /* Warna biru yang sedikit berbeda untuk navigasi utama */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px; /* Font lebih besar untuk tombol utama */
+    -fx-padding: 20px 30px; /* Padding lebih besar */
+    -fx-background-radius: 10px; /* Sudut lebih bulat */
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT; /* Agar ikon dan teks rata kiri */
+    -fx-graphic-text-gap: 15px; /* Jarak antara ikon dan teks */
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.4), 8, 0.1, 0, 2);
+}
+
+.home-nav-button:hover {
+    -fx-background-color: #3498db; /* Warna lebih terang saat hover */
+}
+
+.home-nav-button:pressed {
+    -fx-background-color: #2471a3;
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.2), 5, 0.05, 0, 1);
+}
+
+.home-nav-icon .glyph-font { /* Jika menggunakan FontAwesomeFX atau pustaka ikon serupa */
+    -fx-fill: white;
+}
+
+/* Anda sudah memiliki .button-danger, jadi tombol Logout akan menggunakannya */
+/* Jika ingin style khusus untuk logout di home: */
+/*
+.home-logout-button {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.home-logout-button:hover {
+    -fx-background-color: #a93226;
+}
+*/
+
+/* Tambahkan ini ke modern_style.css atau style.css Anda */
+
+/* ... (gaya-gaya yang sudah ada sebelumnya untuk dailyactivity, dll.) ... */
+
+.home-navigation-container {
+    /* Bisa ditambahkan style khusus jika perlu, misal padding atau border */
+}
+
+.home-nav-button {
+    -fx-background-color: #3498db; /* Warna biru yang menarik untuk navigasi utama */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px; /* Font lebih besar untuk tombol utama */
+    -fx-padding: 20px 30px; /* Padding lebih besar */
+    -fx-background-radius: 10px; /* Sudut lebih bulat */
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT; /* Agar ikon dan teks rata kiri */
+    -fx-graphic-text-gap: 15px; /* Jarak antara ikon dan teks */
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.4), 8, 0.1, 0, 2);
+}
+
+.home-nav-button:hover {
+    -fx-background-color: #2980b9; /* Warna lebih gelap saat hover */
+}
+
+.home-nav-button:pressed {
+    -fx-background-color: #1f618d;
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.2), 5, 0.05, 0, 1);
+}
+
+.home-nav-icon .glyph-font { /* Memberi warna pada ikon FontAwesomeFX */
+    -fx-fill: white !important; /* Pastikan warna ikon putih */
+}
+
+/* Anda sudah memiliki .button-danger di modern_style.css dari DailyActivity, 
+   jadi tombol Logout akan menggunakan gaya tersebut.
+   Class .main-anchor-pane dan .page-title juga akan digunakan dari CSS yang sama.
+*/
+
+.main-anchor-pane { /* Digunakan sebagai root di FXML */
+    -fx-background-color: #f4f7f9; /* Latar belakang utama yang lembut */
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.page-title {
+    -fx-font-size: 28px; /* Disesuaikan agar konsisten, bisa 32px jika suka */
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; 
+    -fx-padding-bottom: 10px;
+}
+
+/* --- Gaya untuk Tombol Navigasi Home --- */
+.home-navigation-container {
+    /* Bisa ditambahkan style khusus jika perlu */
+}
+
+.home-nav-button {
+    -fx-background-color: #3498db; 
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px; 
+    -fx-padding: 20px 30px; 
+    -fx-background-radius: 10px; 
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT; 
+    -fx-graphic-text-gap: 15px; 
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.4), 8, 0.1, 0, 2);
+}
+
+.home-nav-button:hover {
+    -fx-background-color: #2980b9; 
+}
+
+.home-nav-button:pressed {
+    -fx-background-color: #1f618d;
+    -fx-effect: dropshadow(gaussian, rgba(41,128,185,0.2), 5, 0.05, 0, 1);
+}
+
+.home-nav-icon .glyph-font { 
+    -fx-fill: white !important; 
+}
+
+/* --- Gaya Tombol Umum (jika belum ada atau ingin disesuaikan) --- */
+.button-primary { /* Contoh, bisa jadi sudah ada untuk DailyActivity */
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,120,215,0.3), 5, 0.1, 0, 1);
+}
+.button-primary:hover {
+    -fx-background-color: #005a9e;
+}
+
+.button-danger { /* Untuk tombol Logout, mungkin sudah ada */
+    -fx-background-color: #e74c3c; 
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.3), 5, 0.1, 0, 1);
+}
+.button-danger:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Anda mungkin sudah memiliki banyak gaya lain di style.css.
+   Pastikan tidak ada konflik atau override yang tidak diinginkan.
+   Anda bisa menghapus gaya lama yang tidak relevan dari style.css jika FXML sudah tidak menggunakannya.
+*/
+
+.button-secondary {
+    -fx-background-color: #bdc3c7; /* Warna abu-abu atau warna sekunder lainnya */
+    -fx-text-fill: #2c3e50; /* Warna teks yang kontras */
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 15px; /* Sesuaikan padding */
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);
+    -fx-graphic-text-gap: 5px; /* Jarak antara ikon dan teks */
+}
+
+.button-secondary:hover {
+    -fx-background-color: #95a5a6; /* Warna lebih gelap saat hover */
+}
+
+.button-secondary:pressed {
+    -fx-background-color: #7f8c8d;
+    -fx-effect: none;
+}
+
+.button-icon-secondary .glyph-font { /* Untuk ikon di tombol sekunder */
+    -fx-fill: #2c3e50; /* Warna ikon agar sesuai dengan teks tombol */
+}
+
+/* Pastikan file style.css Anda memiliki gaya dasar ini */
+.main-anchor-pane {
+    -fx-background-color: #f4f7f9; /* Latar belakang utama yang lembut */
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Gaya untuk panel form Login dan Register */
+.auth-form-container {
+    -fx-background-color: #ffffff; /* Latar putih untuk panel form */
+    -fx-padding: 35px 45px;      /* Padding internal yang lebih luas */
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0.25, 0, 6); /* Bayangan yang lebih halus dan menyebar */
+    -fx-max-width: 420px;        /* Lebar maksimum panel form */
+}
+
+.auth-title-label {
+    -fx-font-size: 28px; /* Ukuran font untuk judul seperti "EDULIFE+" atau "Register" */
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Warna teks judul yang modern */
+    -fx-padding-bottom: 25px; /* Jarak bawah dari judul */
+}
+
+.auth-input-field {
+    -fx-background-color: #fdfdfd;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #a0a0a0;
+    -fx-border-color: #dfe3e8; /* Border yang lebih halus */
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;    /* Padding internal field */
+    -fx-pref-height: 48px;     /* Tinggi field yang konsisten */
+}
+
+.auth-input-field:focused {
+    -fx-border-color: #0078d7; /* Warna border biru saat fokus */
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,120,215,0.25), 6, 0, 0, 0);
+}
+
+.auth-primary-button { /* Untuk tombol utama Login/Register */
+    -fx-background-color: #0078d7; /* Warna biru primer */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-padding: 12px 25px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-pref-height: 48px;     /* Tinggi tombol yang konsisten */
+    -fx-effect: dropshadow(gaussian, rgba(0,120,215,0.3), 5, 0.1, 0, 1);
+}
+
+.auth-primary-button:hover {
+    -fx-background-color: #005a9e; /* Warna lebih gelap saat hover */
+}
+
+.auth-secondary-button { /* Untuk tombol sekunder seperti "Back to Login" */
+    -fx-background-color: #e9ecef; /* Warna abu-abu muda */
+    -fx-text-fill: #495057;    /* Warna teks yang kontras dengan background abu-abu */
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-pref-height: 42px;
+}
+
+.auth-secondary-button:hover {
+    -fx-background-color: #ced4da; /* Warna lebih gelap saat hover */
+}
+
+.auth-text-info { /* Untuk teks seperti "Belum punya akun?" */
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d; /* Warna abu-abu untuk teks informatif */
+}
+
+.auth-hyperlink {
+    -fx-font-size: 14px;
+    -fx-text-fill: #0078d7; /* Warna biru untuk hyperlink */
+    -fx-border-color: transparent; /* Hapus border default hyperlink */
+    -fx-padding: 0; /* Sesuaikan padding jika perlu */
+}
+
+.auth-hyperlink:hover {
+    -fx-underline: true;
+}
+
+/* Anda mungkin perlu menyesuaikan styleClass yang sudah ada di FXML Anda
+   (seperti title-label, input-field, login-button) agar menggunakan
+   kelas-kelas baru ini (auth-title-label, auth-input-field, auth-primary-button)
+   atau salin properti gaya dari kelas baru ini ke kelas lama Anda.
+   Untuk contoh di bawah, saya akan menggunakan nama kelas baru.
+*/

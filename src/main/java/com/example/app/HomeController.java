@@ -1,0 +1,175 @@
+package com.example.app;
+
+import com.example.app.model.Role;
+import com.example.app.model.User;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
+public class HomeController {
+
+    @FXML
+    private Label welcomeLabel;
+
+    private User currentUser;
+
+    /**
+     * Menginisialisasi controller dan mengatur tampilan berdasarkan user yang login.
+     * Metode ini dipanggil oleh LoginController.
+     * @param stage Stage utama aplikasi.
+     * @param user Objek User yang berisi data pengguna yang login.
+     */
+    public void setupHomeView(Stage stage, User user) throws IOException {
+        this.currentUser = user;
+        String fxmlPath;
+        String title;
+
+        if (currentUser.getRole() == Role.ADMIN) {
+            fxmlPath = "/admin_home.fxml"; // Path FXML untuk Admin Dashboard
+            title = "Admin Dashboard - EDULIFE+";
+            System.out.println("Memuat halaman Admin untuk: " + currentUser.getUsername());
+        } else {
+            fxmlPath = "/user_home.fxml"; // Path FXML untuk User Dashboard
+            title = "Beranda Pengguna - EDULIFE+";
+            System.out.println("Memuat halaman Pengguna untuk: " + currentUser.getUsername());
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+
+        // Dapatkan controller dari FXML yang baru dimuat, jika ada welcomeLabel di dalamnya
+        HomeController loadedController = loader.getController(); // Akan menjadi instance HomeController ini
+        if (loadedController != null) {
+            loadedController.setWelcomeLabel(this.currentUser); // Panggil setter untuk label sambutan
+        }
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle(title + " (" + currentUser.getUsername() + ")");
+        stage.show();
+    }
+
+    // Metode setter untuk welcomeLabel, dipanggil setelah FXML dimuat
+    public void setWelcomeLabel(User user) {
+        this.currentUser = user; // Pastikan currentUser juga disetel di instance controller yang dimuat
+        if (welcomeLabel != null && currentUser != null) {
+            welcomeLabel.setText("Selamat datang, " + currentUser.getUsername() + "! (Peran: " + currentUser.getRole().name() + ")");
+        } else if (welcomeLabel != null) {
+            welcomeLabel.setText("Selamat datang!");
+        }
+    }
+
+
+    @FXML
+    private void handleEcommerce(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ecommerce.fxml")); // Satu FXML untuk Ecommerce
+            Parent root = loader.load();
+
+            // Teruskan objek currentUser ke EcommerceController
+            EcommerceController ecommerceController = loader.getController();
+            if (ecommerceController != null && currentUser != null) {
+                ecommerceController.initUserData(currentUser);
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("E-Commerce - EDULIFE+");
+            stage.show();
+        } catch (IOException e) {
+            showError("Gagal membuka halaman E-Commerce.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga.", e);
+        }
+    }
+
+    @FXML
+    private void handleDailyActivity(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/dailyactivity.fxml"));
+            Parent root = loader.load();
+
+            // Jika DailyActivityController juga perlu data user, teruskan di sini
+            // DailyActivityController activityController = loader.getController();
+            // if (activityController != null && currentUser != null) {
+            //     activityController.initUserData(currentUser);
+            // }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Daily Activity - EDULIFE+");
+            stage.show();
+        } catch (IOException e) {
+            showError("Gagal membuka halaman Daily Activity.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga.", e);
+        }
+    }
+
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        try {
+            LoginController.currentLoggedInUser = null;
+            this.currentUser = null;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Login - EDULIFE+");
+            stage.show();
+        } catch (IOException e) {
+            showError("Gagal logout dan kembali ke halaman login.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga saat logout.", e);
+        }
+    }
+
+    // Metode placeholder untuk fitur admin (jika ada di FXML admin_home.fxml)
+    @FXML
+    private void handleUserManagement(ActionEvent event) {
+        // Implementasi untuk membuka halaman manajemen pengguna
+        showAlert("Fitur Admin", "Halaman Manajemen Pengguna akan dibuka.", Alert.AlertType.INFORMATION);
+        // try {
+        //     FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_management.fxml"));
+        //     Parent root = loader.load();
+        //     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        //     stage.setScene(new Scene(root));
+        //     stage.setTitle("Manajemen Pengguna");
+        //     stage.show();
+        // } catch (IOException e) {
+        //     showError("Gagal membuka halaman Manajemen Pengguna.", e);
+        // }
+    }
+
+
+    private void showError(String message, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Kesalahan");
+        alert.setHeaderText(null);
+        String content = message;
+        if (e != null) {
+            content += "\nDetail: " + e.getMessage();
+            e.printStackTrace();
+        }
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.EcommerceController"
+            prefWidth="800" prefHeight="600"
+            stylesheets="@css/style.css">
+
+    <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Manajemen Paket E-Commerce" styleClass="title-label" />
+        <Label text="Tambahkan, lihat, dan kelola paket e-commerce Anda." style="-fx-text-fill: grey;" />
+
+        <VBox fx:id="formInputPaket" spacing="10" alignment="TOP_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Nama Paket:" prefWidth="100"/>
+                <TextField fx:id="namaField" promptText="Masukkan nama paket" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Deskripsi:" prefWidth="100"/>
+                <TextField fx:id="deskripsiField" promptText="Masukkan deskripsi paket" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Harga:" prefWidth="100"/>
+                <TextField fx:id="hargaField" promptText="Masukkan harga" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Button fx:id="tambahButton" text="Tambah Paket" styleClass="main-button" onAction="#tambahPaket"/>
+        </VBox>
+
+        <TableView fx:id="paketTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="namaColumn" text="Nama Paket" prefWidth="150"/>
+                <TableColumn fx:id="deskripsiColumn" text="Deskripsi" prefWidth="250"/>
+                <TableColumn fx:id="hargaColumn" text="Harga" prefWidth="100"/>
+                <TableColumn fx:id="aksiColumn" text="Aksi" prefWidth="80"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+
+        <Button text="Kembali ke Home" styleClass="main-button" onAction="#handleBack" />
+    </VBox>
+</AnchorPane>
