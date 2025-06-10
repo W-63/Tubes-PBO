@@ -10,7 +10,7 @@ public class PaketEcommerce {
     private Integer harga;
 
     public PaketEcommerce() {
-        // Konstruktor kosong
+        
     }
 
     public PaketEcommerce(Integer id, String nama, String deskripsi, Integer harga) {
@@ -20,14 +20,13 @@ public class PaketEcommerce {
         this.harga = harga;
     }
 
-    // Konstruktor tanpa ID (untuk penambahan baru)
+  
     public PaketEcommerce(String nama, String deskripsi, Integer harga) {
         this.nama = nama;
         this.deskripsi = deskripsi;
         this.harga = harga;
     }
 
-    // --- Getters ---
     public Integer getId() {
         return id;
     }
@@ -44,7 +43,7 @@ public class PaketEcommerce {
         return harga;
     }
 
-    // --- Setters ---
+   
     public void setId(Integer id) {
         this.id = id;
     }

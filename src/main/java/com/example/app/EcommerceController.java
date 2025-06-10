@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import com.example.app.dao.PaketDAOImpl;
 import com.example.app.model.PaketEcommerce;
-import com.example.app.model.Role; // Ditambahkan
-import com.example.app.model.User; // Ditambahkan
+import com.example.app.model.Role; 
+import com.example.app.model.User; 
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,7 +22,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox; // Import VBox
+import javafx.scene.layout.VBox; 
 import javafx.stage.Stage;
 
 public class EcommerceController {
@@ -36,11 +36,11 @@ public class EcommerceController {
     @FXML private TableColumn<PaketEcommerce, Integer> hargaColumn;
     @FXML private TableColumn<PaketEcommerce, Void> aksiColumn;
     @FXML private Button tambahButton;
-    @FXML private VBox formInputPaket; // fx:id untuk VBox yang membungkus input dan tombol tambah
+    @FXML private VBox formInputPaket; 
 
     private ObservableList<PaketEcommerce> paketList;
     private PaketDAOImpl paketDAO;
-    private User currentUser; // Menyimpan informasi user yang login
+    private User currentUser; 
 
     @FXML
     public void initialize() {
@@ -55,12 +55,12 @@ public class EcommerceController {
             private final Button hapusBtn = new Button("Hapus");
 
             {
-                // Inisialisasi aksi tombol hapus
+                
                 hapusBtn.setOnAction(e -> {
                     PaketEcommerce item = getTableView().getItems().get(getIndex());
                     try {
                         paketDAO.deletePaket(item.getId());
-                        loadPaket(); // Muat ulang data setelah penghapusan
+                        loadPaket(); 
                         showAlert("Sukses", "Paket berhasil dihapus!", Alert.AlertType.INFORMATION);
                     } catch (Exception ex) {
                         showAlert("Gagal", "Gagal menghapus data: " + ex.getMessage(), Alert.AlertType.ERROR);
@@ -75,21 +75,20 @@ public class EcommerceController {
                     setGraphic(null);
                 } else {
                     setGraphic(hapusBtn);
-                    // Atur visibilitas tombol hapus berdasarkan peran user
-                    // Ini penting karena updateItem dipanggil berulang kali
+                    
                     if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
                         hapusBtn.setVisible(true);
-                        hapusBtn.setManaged(true); // Memastikan tombol mengambil ruang
+                        hapusBtn.setManaged(true); 
                     } else {
                         hapusBtn.setVisible(false);
-                        hapusBtn.setManaged(false); // Memastikan tombol tidak mengambil ruang
+                        hapusBtn.setManaged(false); 
                     }
                 }
             }
         });
 
         paketTable.setItems(paketList);
-        loadPaket(); // Muat data awal saat inisialisasi
+        loadPaket(); 
     }
 
     /**
@@ -101,24 +100,23 @@ public class EcommerceController {
         this.currentUser = user;
         if (this.currentUser != null) {
             System.out.println("EcommerceController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
-            // Sesuaikan tampilan berdasarkan peran
+
             if (currentUser.getRole() == Role.ADMIN) {
-                // Admin bisa menambahkan dan menghapus paket
                 if (formInputPaket != null) {
                     formInputPaket.setVisible(true);
                     formInputPaket.setManaged(true);
                 }
-                aksiColumn.setVisible(true); // Tampilkan kolom aksi (hapus)
+                aksiColumn.setVisible(true); 
             } else {
-                // User biasa hanya bisa melihat
+                
                 if (formInputPaket != null) {
                     formInputPaket.setVisible(false);
                     formInputPaket.setManaged(false);
                 }
-                aksiColumn.setVisible(false); // Sembunyikan kolom aksi (hapus)
-                aksiColumn.setVisible(false); // Sembunyikan kolom aksi (hapus)
+                aksiColumn.setVisible(false); 
+                aksiColumn.setVisible(false); 
             }
-            // Refresh tabel untuk menerapkan perubahan visibilitas kolom aksi
+            
             paketTable.refresh();
         }
     }
@@ -136,12 +134,12 @@ public class EcommerceController {
 
         try {
             int harga = Integer.parseInt(hargaStr);
-            PaketEcommerce paket = new PaketEcommerce(nama, deskripsi, harga); // Menggunakan konstruktor baru
+            PaketEcommerce paket = new PaketEcommerce(nama, deskripsi, harga); 
 
             paketDAO.addPaket(paket);
             showAlert("Sukses", "Paket berhasil ditambahkan!", Alert.AlertType.INFORMATION);
             clearForm();
-            loadPaket(); // Muat ulang data setelah penambahan
+            loadPaket(); 
         } catch (NumberFormatException e) {
             showAlert("Format Salah", "Harga harus berupa angka!", Alert.AlertType.WARNING);
         } catch (Exception e) {
@@ -182,23 +180,17 @@ public class EcommerceController {
 
             String fxmlPath;
             String title;
-            // Tentukan FXML Home mana yang akan dimuat berdasarkan peran user saat ini
+            
             if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
-                fxmlPath = "/admin_home.fxml"; // Path FXML untuk Admin Home
+                fxmlPath = "/admin_home.fxml"; 
                 title = "Admin Dashboard - EDULIFE+";
             } else {
-                fxmlPath = "/user_home.fxml"; // Path FXML untuk User Home
+                fxmlPath = "/user_home.fxml"; 
                 title = "Beranda Pengguna - EDULIFE+";
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent homeRoot = loader.load();
-
-            // Opsional: Jika HomeController memiliki initUserData dan Anda ingin memperbarui label selamat datang
-            // HomeController homeController = loader.getController();
-            // if (homeController != null && currentUser != null) {
-            //     homeController.initUserData(currentUser);
-            // }
 
             Scene homeScene = new Scene(homeRoot);
             currentStage.setScene(homeScene);

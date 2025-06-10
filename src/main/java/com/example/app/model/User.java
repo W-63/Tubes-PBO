@@ -12,7 +12,7 @@ public class User {
         this.role = role;
     }
 
-    // Getters
+
     public int getId() {
         return id;
     }
@@ -25,7 +25,7 @@ public class User {
         return role;
     }
 
-    // Setters (jika diperlukan)
+
     public void setId(int id) {
         this.id = id;
     }

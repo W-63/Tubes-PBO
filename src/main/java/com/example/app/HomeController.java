@@ -33,11 +33,11 @@ public class HomeController {
         String title;
 
         if (currentUser.getRole() == Role.ADMIN) {
-            fxmlPath = "/admin_home.fxml"; // Path FXML untuk Admin Dashboard
+            fxmlPath = "/admin_home.fxml"; 
             title = "Admin Dashboard - EDULIFE+";
             System.out.println("Memuat halaman Admin untuk: " + currentUser.getUsername());
         } else {
-            fxmlPath = "/user_home.fxml"; // Path FXML untuk User Dashboard
+            fxmlPath = "/user_home.fxml"; 
             title = "Beranda Pengguna - EDULIFE+";
             System.out.println("Memuat halaman Pengguna untuk: " + currentUser.getUsername());
         }
@@ -45,10 +45,10 @@ public class HomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
 
-        // Dapatkan controller dari FXML yang baru dimuat, jika ada welcomeLabel di dalamnya
-        HomeController loadedController = loader.getController(); // Akan menjadi instance HomeController ini
+       
+        HomeController loadedController = loader.getController(); 
         if (loadedController != null) {
-            loadedController.setWelcomeLabel(this.currentUser); // Panggil setter untuk label sambutan
+            loadedController.setWelcomeLabel(this.currentUser); 
         }
 
         Scene scene = new Scene(root);
@@ -57,9 +57,9 @@ public class HomeController {
         stage.show();
     }
 
-    // Metode setter untuk welcomeLabel, dipanggil setelah FXML dimuat
+    
     public void setWelcomeLabel(User user) {
-        this.currentUser = user; // Pastikan currentUser juga disetel di instance controller yang dimuat
+        this.currentUser = user; 
         if (welcomeLabel != null && currentUser != null) {
             welcomeLabel.setText("Selamat datang, " + currentUser.getUsername() + "! (Peran: " + currentUser.getRole().name() + ")");
         } else if (welcomeLabel != null) {
@@ -74,7 +74,6 @@ public class HomeController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ecommerce.fxml")); // Satu FXML untuk Ecommerce
             Parent root = loader.load();
 
-            // Teruskan objek currentUser ke EcommerceController
             EcommerceController ecommerceController = loader.getController();
             if (ecommerceController != null && currentUser != null) {
                 ecommerceController.initUserData(currentUser);
@@ -96,12 +95,6 @@ public class HomeController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/dailyactivity.fxml"));
             Parent root = loader.load();
-
-            // Jika DailyActivityController juga perlu data user, teruskan di sini
-            // DailyActivityController activityController = loader.getController();
-            // if (activityController != null && currentUser != null) {
-            //     activityController.initUserData(currentUser);
-            // }
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -134,21 +127,12 @@ public class HomeController {
         }
     }
 
-    // Metode placeholder untuk fitur admin (jika ada di FXML admin_home.fxml)
+    
     @FXML
     private void handleUserManagement(ActionEvent event) {
-        // Implementasi untuk membuka halaman manajemen pengguna
+        
         showAlert("Fitur Admin", "Halaman Manajemen Pengguna akan dibuka.", Alert.AlertType.INFORMATION);
-        // try {
-        //     FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_management.fxml"));
-        //     Parent root = loader.load();
-        //     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        //     stage.setScene(new Scene(root));
-        //     stage.setTitle("Manajemen Pengguna");
-        //     stage.show();
-        // } catch (IOException e) {
-        //     showError("Gagal membuka halaman Manajemen Pengguna.", e);
-        // }
+    
     }
 
 

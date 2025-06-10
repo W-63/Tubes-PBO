@@ -1,7 +1,7 @@
 package com.example.app;
 
 import com.example.app.model.Role;
-import com.example.app.service.UserService; // Ditambahkan
+import com.example.app.service.UserService; 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,10 +24,10 @@ public class RegisterController {
     @FXML
     private PasswordField passwordField;
 
-    private final UserService userService; // Instance UserService
+    private final UserService userService; 
 
     public RegisterController() {
-        this.userService = new UserService(); // Inisialisasi UserService
+        this.userService = new UserService(); 
     }
 
     @FXML
@@ -64,9 +64,6 @@ public class RegisterController {
 
     @FXML
     private void goToLogin(ActionEvent event) throws IOException {
-        // Pastikan path ke login.fxml benar.
-        // Jika login.fxml ada di root 'resources', path-nya "/login.fxml".
-        // Jika ada di subfolder 'view', path-nya "/view/login.fxml".
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml")); // Sesuaikan jika perlu
         Parent loginPage = loader.load();
         Scene loginScene = new Scene(loginPage);

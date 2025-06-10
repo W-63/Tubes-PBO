@@ -41,24 +41,23 @@ public class LoginController {
             User user = userService.loginUser(username, password);
 
             if (user != null) {
-                currentLoggedInUser = user; // Simpan info user yang login
+                currentLoggedInUser = user; 
 
                 showAlert(Alert.AlertType.INFORMATION, "Login Berhasil", "Selamat datang, " + user.getUsername() + "! Peran Anda: " + user.getRole().name());
 
                 Stage stage = (Stage) usernameField.getScene().getWindow();
 
-                // Panggil setupHomeView di HomeController untuk memuat FXML yang sesuai peran
-                HomeController homeController = new HomeController(); // Buat instance HomeController
-                homeController.setupHomeView(stage, currentLoggedInUser); // Panggil metode setupHomeView
+                HomeController homeController = new HomeController(); 
+                homeController.setupHomeView(stage, currentLoggedInUser); 
 
             } else {
                 showAlert(Alert.AlertType.ERROR, "Login Gagal", "Username atau password salah.");
-                currentLoggedInUser = null; // Reset jika gagal
+                currentLoggedInUser = null; 
             }
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Database", "Koneksi gagal: " + e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) { // Tangkap IOException untuk FXMLLoader
+        } catch (IOException e) { 
             showAlert(Alert.AlertType.ERROR, "Kesalahan Aplikasi", "Gagal memuat halaman Home: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
@@ -75,7 +74,7 @@ public class LoginController {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(registerRoot));
             stage.setTitle("Registrasi - EDULIFE+");
-            stage.show(); // Penting: tambahkan .show()
+            stage.show(); 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Aplikasi", "Gagal membuka halaman registrasi: " + e.getMessage());
             e.printStackTrace();

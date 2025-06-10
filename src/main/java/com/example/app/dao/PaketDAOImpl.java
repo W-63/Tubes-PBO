@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 
-public class PaketDAOImpl implements PaketDAO { // Implementasikan interface PaketDAO
+public class PaketDAOImpl implements PaketDAO { 
 
     private List<PaketEcommerce> paketDatabase;
-    private static int nextId = 1; // Untuk menghasilkan ID unik sementara
+    private static int nextId = 1; 
 
     public PaketDAOImpl() {
         paketDatabase = new ArrayList<>();
-        // Tambahkan beberapa data dummy untuk pengujian
+        
         addPaket(new PaketEcommerce(null, "Paket Belajar Dasar", "Akses ke modul dasar dan latihan.", 100000));
         addPaket(new PaketEcommerce(null, "Paket Belajar Menengah", "Akses ke modul menengah dan proyek.", 250000));
         addPaket(new PaketEcommerce(null, "Paket Belajar Mahir", "Akses ke semua modul, proyek, dan mentorship.", 500000));
@@ -29,7 +29,7 @@ public class PaketDAOImpl implements PaketDAO { // Implementasikan interface Pak
 
     @Override
     public List<PaketEcommerce> getAllPaket() {
-        return new ArrayList<>(paketDatabase); // Mengembalikan salinan untuk mencegah modifikasi eksternal
+        return new ArrayList<>(paketDatabase); 
     }
 
     @Override
