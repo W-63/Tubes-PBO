@@ -12,7 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -64,7 +63,7 @@ public class RegisterController {
 
     @FXML
     private void goToLogin(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml")); // Sesuaikan jika perlu
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml")); 
         Parent loginPage = loader.load();
         Scene loginScene = new Scene(loginPage);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

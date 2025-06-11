@@ -1,14 +1,16 @@
 package com.example.app.service;
 
-import com.example.app.db.DBUtil; // Menggunakan DBUtil dari proyek Anda
-import com.example.app.model.Role;
-import com.example.app.model.User;
+import com.example.app.db.DBUtil; 
+import com.example.app.model.Role; 
+import com.example.app.model.User; 
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList; 
+import java.util.List;     
 
 public class UserService {
 
@@ -33,22 +35,18 @@ public class UserService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // true jika username ditemukan
+                return rs.next(); 
             }
         }
     }
 
     public boolean registerUser(String username, String password, Role role) throws SQLException {
-        // Sebenarnya, pengecekan isUsernameTaken idealnya dilakukan sebelum memanggil ini,
-        // atau sebagai bagian dari transaksi jika memungkinkan.
-        // Untuk kesederhanaan, kita asumsikan sudah dicek.
-
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, password);
-            stmt.setString(3, role.name().toLowerCase()); // Simpan nama enum sebagai string lowercase
+            stmt.setString(3, role.name().toLowerCase()); 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         }
@@ -65,10 +63,47 @@ public class UserService {
                     int id = rs.getInt("id");
                     String dbUsername = rs.getString("username");
                     Role role = Role.fromString(rs.getString("role"));
-                    return new User(id, dbUsername, role);
+                    return new User(id, dbUsername, role); 
                 }
             }
         }
-        return null; // User tidak ditemukan atau password salah
+        return null; 
+    }
+
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT id, username, role FROM users";
+        try (Connection conn = DBUtil.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String username = rs.getString("username");
+                Role role = Role.fromString(rs.getString("role"));
+                users.add(new User(id, username, role));
+            }
+        }
+        return users;
+    }
+
+    public boolean deleteUser(int userId) throws SQLException {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+
+    public boolean updateUserRole(int userId, Role newRole) throws SQLException {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newRole.name().toLowerCase());
+            stmt.setInt(2, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        }
     }
 }

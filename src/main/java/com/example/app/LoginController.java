@@ -8,20 +8,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
 import java.io.IOException;
+import java.time.LocalDateTime; 
 
 public class LoginController {
 
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
 
     private final UserService userService;
 
-    public static User currentLoggedInUser = null; // Menyimpan user yang sedang login
+    public static User currentLoggedInUser = null; 
 
     public LoginController() {
         this.userService = new UserService();
@@ -41,12 +39,15 @@ public class LoginController {
             User user = userService.loginUser(username, password);
 
             if (user != null) {
+                user.setLoggedIn(true);
+                user.setLastLoginTime(LocalDateTime.now());
                 currentLoggedInUser = user; 
 
                 showAlert(Alert.AlertType.INFORMATION, "Login Berhasil", "Selamat datang, " + user.getUsername() + "! Peran Anda: " + user.getRole().name());
 
                 Stage stage = (Stage) usernameField.getScene().getWindow();
 
+                
                 HomeController homeController = new HomeController(); 
                 homeController.setupHomeView(stage, currentLoggedInUser); 
 
@@ -57,7 +58,7 @@ public class LoginController {
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Database", "Koneksi gagal: " + e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) { 
+        } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Aplikasi", "Gagal memuat halaman Home: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
@@ -66,7 +67,7 @@ public class LoginController {
         }
     }
 
-    @FXML
+     @FXML
     private void handleRegister() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
@@ -87,5 +88,5 @@ public class LoginController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
+    } 
 }

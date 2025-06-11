@@ -17,9 +17,10 @@
         <Label fx:id="welcomeLabel" text="Selamat datang, [Nama Pengguna]!" style="-fx-text-fill: white;" />
 
         <GridPane hgap="20" vgap="20" alignment="CENTER">
-            <Button text="Lihat Produk E-Commerce" styleClass="main-button" onAction="#handleEcommerce" GridPane.rowIndex="0" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
+            <Button text="Lihat Katalog Kelas" styleClass="main-button" onAction="#handleEcommerce" GridPane.rowIndex="0" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
             <Button text="Aktivitas Harian Saya" styleClass="main-button" onAction="#handleDailyActivity" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220" prefHeight="60"/>
-            </GridPane>
+            <Button text="Kelas Saya" styleClass="main-button" onAction="#handleMyCourses" GridPane.rowIndex="1" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
+        </GridPane>
 
         <Region VBox.vgrow="ALWAYS"/>
 

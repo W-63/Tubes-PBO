@@ -7,7 +7,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.app.EcommerceController"
-            prefWidth="800" prefHeight="600"
+            prefWidth="900" prefHeight="700"
             stylesheets="@css/style.css">
 
     <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
@@ -15,31 +15,44 @@
             <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
 
-        <Label text="Manajemen Paket E-Commerce" styleClass="title-label" />
-        <Label text="Tambahkan, lihat, dan kelola paket e-commerce Anda." style="-fx-text-fill: grey;" />
+        <Label text="Katalog Kelas Belajar" styleClass="title-label" />
+        <Label text="Temukan dan daftar di kelas yang Anda minati." style="-fx-text-fill: grey;" />
 
-        <VBox fx:id="formInputPaket" spacing="10" alignment="TOP_LEFT">
+        <VBox fx:id="formInputCourse" spacing="10" alignment="TOP_LEFT" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;">
+            <Label text="Tambahkan Kelas Baru" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Nama Paket:" prefWidth="100"/>
-                <TextField fx:id="namaField" promptText="Masukkan nama paket" HBox.hgrow="ALWAYS"/>
+                <Label text="Judul Kelas:" prefWidth="120"/>
+                <TextField fx:id="titleField" promptText="Masukkan judul kelas" HBox.hgrow="ALWAYS"/>
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Deskripsi:" prefWidth="100"/>
-                <TextField fx:id="deskripsiField" promptText="Masukkan deskripsi paket" HBox.hgrow="ALWAYS"/>
+                <Label text="Deskripsi:" prefWidth="120"/>
+                <TextArea fx:id="descriptionField" promptText="Masukkan deskripsi kelas" prefRowCount="3" HBox.hgrow="ALWAYS"/>
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Harga:" prefWidth="100"/>
-                <TextField fx:id="hargaField" promptText="Masukkan harga" HBox.hgrow="ALWAYS"/>
+                <Label text="Harga (Rp):" prefWidth="120"/>
+                <TextField fx:id="priceField" promptText="Masukkan harga" HBox.hgrow="ALWAYS"/>
             </HBox>
-            <Button fx:id="tambahButton" text="Tambah Paket" styleClass="main-button" onAction="#tambahPaket"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Durasi (Minggu):" prefWidth="120"/>
+                <TextField fx:id="durationField" promptText="Durasi dalam minggu" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Total Modul:" prefWidth="120"/>
+                <TextField fx:id="modulesField" promptText="Jumlah modul kelas" HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Button fx:id="addCourseButton" text="Tambah Kelas" styleClass="main-button" onAction="#addCourse"/>
         </VBox>
 
-        <TableView fx:id="paketTable" VBox.vgrow="ALWAYS">
+        <Region prefHeight="10"/>
+
+        <Label text="Daftar Kelas Tersedia" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="namaColumn" text="Nama Paket" prefWidth="150"/>
-                <TableColumn fx:id="deskripsiColumn" text="Deskripsi" prefWidth="250"/>
-                <TableColumn fx:id="hargaColumn" text="Harga" prefWidth="100"/>
-                <TableColumn fx:id="aksiColumn" text="Aksi" prefWidth="80"/>
+                <TableColumn fx:id="titleColumn" text="Judul Kelas" prefWidth="200"/>
+                <TableColumn fx:id="descriptionColumn" text="Deskripsi" prefWidth="300"/>
+                <TableColumn fx:id="priceColumn" text="Harga" prefWidth="100"/>
+                <TableColumn fx:id="durationColumn" text="Durasi (Minggu)" prefWidth="100"/>
+                <TableColumn fx:id="actionColumn" text="Aksi" prefWidth="100"/>
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

@@ -3,29 +3,30 @@ package com.example.app;
 import com.example.app.dao.ToDoDAO;
 import com.example.app.dao.ToDoDAOImpl;
 import com.example.app.model.ToDoItem;
+import com.example.app.model.User; 
+import com.example.app.model.Role; 
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent; // Ditambahkan
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader; // Ditambahkan
-import javafx.scene.Node; // Ditambahkan
-import javafx.scene.Parent; // Ditambahkan
-import javafx.scene.Scene; // Ditambahkan
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage; // Ditambahkan
+import javafx.stage.Stage;
 
-import java.io.IOException; // Ditambahkan
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class DailyActivityController {
 
-    // Perubahan: TextField menjadi ComboBox
     @FXML private ComboBox<String> kategoriComboBox;
     @FXML private TextArea deskripsiField;
     @FXML private DatePicker tanggalPicker;
@@ -38,17 +39,17 @@ public class DailyActivityController {
     @FXML private TableColumn<ToDoItem, Boolean> statusColumn;
     @FXML private Button tambahButton;
     @FXML private Button hapusButton;
-    @FXML private Button kembaliButton; // Ditambahkan untuk tombol kembali
+    @FXML private Button kembaliButton;
 
     private ToDoDAO todoDAO;
     private ObservableList<ToDoItem> todoList;
+    private User currentUser; 
 
     @FXML
     public void initialize() {
         todoDAO = new ToDoDAOImpl();
         todoList = FXCollections.observableArrayList();
 
-        // Inisialisasi ComboBox dengan opsi kategori
         ObservableList<String> kategoriOptions =
             FXCollections.observableArrayList(
                 "Pekerjaan",
@@ -70,8 +71,10 @@ public class DailyActivityController {
             booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
                 todo.setStatus(isNowSelected);
                 try {
-                    todoDAO.updateStatus(todo.getId(), isNowSelected);
-                } catch (SQLException e) {
+                    
+                    tampilkanAlert("Peringatan", "Fungsi update status belum sepenuhnya diimplementasikan di DAO.", Alert.AlertType.INFORMATION);
+
+                } catch (Exception e) { 
                     tampilkanAlert("Kesalahan", "Gagal update status: " + e.getMessage(), Alert.AlertType.ERROR);
                     booleanProp.set(wasSelected);
                 }
@@ -92,10 +95,18 @@ public class DailyActivityController {
         muatDataToDo();
     }
 
+    public void initUserData(User user) {
+        this.currentUser = user;
+      
+    }
+
+
     private void muatDataToDo() {
         try {
             todoList.setAll(todoDAO.getAllToDos());
         } catch (SQLException e) {
+            tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception e) { 
             tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -119,7 +130,7 @@ public class DailyActivityController {
 
         LocalTime waktu;
         try {
-            waktu = LocalTime.parse(waktuStr); // Format HH:mm
+            waktu = LocalTime.parse(waktuStr); 
         } catch (Exception e) {
             tampilkanAlert("Format Salah", "Waktu harus dalam format HH:mm, contoh: 09:30", Alert.AlertType.WARNING);
             return;
@@ -133,6 +144,8 @@ public class DailyActivityController {
             bersihkanInput();
             muatDataToDo();
         } catch (SQLException e) {
+            tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception e) { 
             tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -151,6 +164,8 @@ public class DailyActivityController {
             muatDataToDo();
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception e) { 
+            tampilkanAlert("Kesalahan", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -161,12 +176,6 @@ public class DailyActivityController {
         waktuField.clear();
     }
 
-    /**
-     * Menampilkan alert dialog.
-     * @param judul Judul alert.
-     * @param isi Isi pesan alert.
-     * @param alertType Jenis alert (INFORMATION, WARNING, ERROR, dll.).
-     */
     private void tampilkanAlert(String judul, String isi, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(judul);
@@ -175,27 +184,13 @@ public class DailyActivityController {
         alert.showAndWait();
     }
 
-    /**
-     * Menangani aksi tombol kembali untuk navigasi ke halaman Home.
-     * @param event ActionEvent dari tombol yang diklik.
-     */
     @FXML
     private void handleKembaliKeHome(ActionEvent event) {
         try {
-            // Muat file FXML untuk halaman home.
-            // Pastikan path ini benar sesuai dengan lokasi home.fxml Anda.
-            // Jika home.fxml ada di root 'resources', path-nya adalah "/home.fxml".
-            // Jika ada di subfolder 'view' di dalam 'resources', path-nya adalah "/view/home.fxml".
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/home.fxml")); // Ganti jika path berbeda
-            
-            Parent homeRoot = loader.load();
-            Scene homeScene = new Scene(homeRoot);
-
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            currentStage.setScene(homeScene);
-            currentStage.setTitle("Beranda - EDULIFE+"); // Sesuaikan judul jika perlu
-            currentStage.show();
+            HomeController homeController = new HomeController();
+            homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser);
 
         } catch (IOException e) {
             e.printStackTrace();

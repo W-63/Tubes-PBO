@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class HomeController {
@@ -71,7 +70,7 @@ public class HomeController {
     @FXML
     private void handleEcommerce(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ecommerce.fxml")); // Satu FXML untuk Ecommerce
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ecommerce.fxml")); 
             Parent root = loader.load();
 
             EcommerceController ecommerceController = loader.getController();
@@ -127,15 +126,57 @@ public class HomeController {
         }
     }
 
-    
-    @FXML
+     @FXML
     private void handleUserManagement(ActionEvent event) {
-        
-        showAlert("Fitur Admin", "Halaman Manajemen Pengguna akan dibuka.", Alert.AlertType.INFORMATION);
-    
+        try {
+            if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_management.fxml")); 
+                Parent root = loader.load();
+
+              
+                UserManagementController userManController = loader.getController();
+                if (userManController != null) {
+                    userManController.initUserData(currentUser);
+                }
+
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Manajemen Pengguna - EDULIFE+");
+                stage.show();
+            } else {
+                showAlert("Akses Ditolak", "Anda tidak memiliki izin untuk mengakses fitur ini.", Alert.AlertType.WARNING);
+            }
+        } catch (IOException e) {
+            showError("Gagal membuka halaman Manajemen Pengguna.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga.", e);
+        }
     }
 
-
+     @FXML
+    private void handleMyCourses(ActionEvent event) {
+        try {
+            if (currentUser != null && currentUser.getRole() == Role.USER) { 
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_my_courses.fxml"));
+                Parent root = loader.load();
+                UserMyCoursesController myCoursesController = loader.getController();
+                if (myCoursesController != null) {
+                    myCoursesController.initUserData(currentUser);
+                }
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Kelas Saya - EDULIFE+");
+                stage.show();
+            } else {
+                showAlert("Akses Ditolak", "Fitur ini hanya untuk pengguna biasa.", Alert.AlertType.WARNING);
+            }
+        } catch (IOException e) {
+            showError("Gagal membuka halaman Kelas Saya.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga.", e);
+        }
+    }
+    
     private void showError(String message, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Kesalahan");

@@ -1,67 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="main-anchor-pane" stylesheets="@css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.HomeController">
-   <children>
-      <VBox alignment="CENTER" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <padding>
-            <Insets bottom="40.0" left="50.0" right="50.0" top="40.0" />
-         </padding>
-         <children>
-            <Label styleClass="page-title" text="Beranda EDULIFE+">
-               <font>
-                  <Font name="Segoe UI Bold" size="32.0" />
-               </font>
-            </Label>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.HomeController"
+            prefWidth="800" prefHeight="600"
+            stylesheets="@css/style.css">
 
-            <Label fx:id="welcomeLabel" styleClass="welcome-text-label">
-                <font>
-                    <Font name="Segoe UI" size="16.0" />
-                </font>
-                <VBox.margin>
-                    <Insets bottom="10.0" /> 
-                </VBox.margin>
-            </Label>
+    <VBox alignment="CENTER" spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <Label text="Beranda Pengguna" styleClass="title-label" />
+        <Label fx:id="welcomeLabel" text="Selamat datang, [Nama Pengguna]!" style="-fx-text-fill: white;" />
 
-            <VBox alignment="CENTER" spacing="20.0" maxWidth="400.0" styleClass="home-navigation-container">
-               <children>
-                  <Button fx:id="ecommerceButton" onAction="#handleEcommerce" styleClass="home-nav-button" text="Jelajahi E-Commerce" prefWidth="Infinity">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="SHOPPING_CART" size="20" styleClass="home-nav-icon"/>
-                     </graphic>
-                  </Button>
+        <GridPane hgap="20" vgap="20" alignment="CENTER">
+            <Button text="Lihat Katalog Kelas" styleClass="main-button" onAction="#handleEcommerce" GridPane.rowIndex="0" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
+            <Button text="Aktivitas Harian Saya" styleClass="main-button" onAction="#handleDailyActivity" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220" prefHeight="60"/>
+            <Button text="Kelas Saya" styleClass="main-button" onAction="#handleMyCourses" GridPane.rowIndex="1" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/> </GridPane>
 
-                  <Button fx:id="dailyActivityButton" onAction="#handleDailyActivity" styleClass="home-nav-button" text="Kelola Aktivitas Harian" prefWidth="Infinity">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="TASKS" size="20" styleClass="home-nav-icon"/>
-                     </graphic>
-                  </Button>
-               </children>
-            </VBox>
-            
-            <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
-                <VBox.margin>
-                    <Insets top="20.0" />
-                </VBox.margin>
-                <children>
-                    <Button fx:id="logoutButton" onAction="#handleLogout" styleClass="button-danger" text="Logout">
-                        <graphic>
-                           <FontAwesomeIconView glyphName="SIGN_OUT" size="18" />
-                        </graphic>
-                        <VBox.margin>
-                           <Insets top="50.0" />
-                        </VBox.margin>
-                    </Button>
-                </children>
-            </VBox>
-         </children>
-      </VBox>
-   </children>
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <Button text="Logout" styleClass="main-button" onAction="#handleLogout" prefWidth="150" prefHeight="40"/>
+    </VBox>
 </AnchorPane>

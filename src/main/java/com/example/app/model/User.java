@@ -1,17 +1,21 @@
 package com.example.app.model;
 
+import java.time.LocalDateTime; 
+
 public class User {
     private int id;
     private String username;
-    // Password tidak disimpan di objek User setelah login untuk keamanan
     private Role role;
+    private LocalDateTime lastLoginTime; 
+    private boolean isLoggedIn;          
 
     public User(int id, String username, Role role) {
         this.id = id;
         this.username = username;
         this.role = role;
+        this.lastLoginTime = null; 
+        this.isLoggedIn = false;   
     }
-
 
     public int getId() {
         return id;
@@ -25,7 +29,15 @@ public class User {
         return role;
     }
 
+    public LocalDateTime getLastLoginTime() { 
+        return lastLoginTime;
+    }
 
+    public boolean isLoggedIn() { 
+        return isLoggedIn;
+    }
+
+    
     public void setId(int id) {
         this.id = id;
     }
@@ -38,12 +50,22 @@ public class User {
         this.role = role;
     }
 
+    public void setLastLoginTime(LocalDateTime lastLoginTime) { 
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public void setLoggedIn(boolean loggedIn) { 
+        isLoggedIn = loggedIn;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                "id=" + id +
                ", username='" + username + '\'' +
                ", role=" + role +
+               ", lastLoginTime=" + lastLoginTime +
+               ", isLoggedIn=" + isLoggedIn +
                '}';
     }
 }
