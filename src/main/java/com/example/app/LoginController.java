@@ -8,18 +8,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+
 import java.sql.SQLException;
 import java.io.IOException;
-import java.time.LocalDateTime; 
+import java.time.LocalDateTime;
 
 public class LoginController {
 
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
 
     private final UserService userService;
 
-    public static User currentLoggedInUser = null; 
+    // Variabel statis untuk menyimpan info user yang login (single source of truth)
+    public static User currentLoggedInUser = null;
 
     public LoginController() {
         this.userService = new UserService();
@@ -39,26 +43,27 @@ public class LoginController {
             User user = userService.loginUser(username, password);
 
             if (user != null) {
+                // Atur status login dan waktu login terakhir pada objek user yang berhasil login
                 user.setLoggedIn(true);
                 user.setLastLoginTime(LocalDateTime.now());
-                currentLoggedInUser = user; 
+                currentLoggedInUser = user; // Simpan user yang login di static field
 
                 showAlert(Alert.AlertType.INFORMATION, "Login Berhasil", "Selamat datang, " + user.getUsername() + "! Peran Anda: " + user.getRole().name());
 
                 Stage stage = (Stage) usernameField.getScene().getWindow();
 
-                
-                HomeController homeController = new HomeController(); 
-                homeController.setupHomeView(stage, currentLoggedInUser); 
+                // Panggil setupHomeView di HomeController untuk memuat FXML yang sesuai peran
+                HomeController homeController = new HomeController(); // Buat instance HomeController
+                homeController.setupHomeView(stage, currentLoggedInUser); // Panggil metode setupHomeView
 
             } else {
                 showAlert(Alert.AlertType.ERROR, "Login Gagal", "Username atau password salah.");
-                currentLoggedInUser = null; 
+                currentLoggedInUser = null; // Reset jika gagal
             }
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Database", "Koneksi gagal: " + e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException e) { // Tangkap IOException untuk FXMLLoader
             showAlert(Alert.AlertType.ERROR, "Kesalahan Aplikasi", "Gagal memuat halaman Home: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
@@ -67,15 +72,15 @@ public class LoginController {
         }
     }
 
-     @FXML
+    @FXML
     private void handleRegister() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/register.fxml")); // Sesuaikan path jika perlu
             Parent registerRoot = loader.load();
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(registerRoot));
             stage.setTitle("Registrasi - EDULIFE+");
-            stage.show(); 
+            stage.show();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Kesalahan Aplikasi", "Gagal membuka halaman registrasi: " + e.getMessage());
             e.printStackTrace();
@@ -88,5 +93,5 @@ public class LoginController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    } 
+    }
 }

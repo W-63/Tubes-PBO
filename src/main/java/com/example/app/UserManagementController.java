@@ -14,16 +14,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType; // Ditambahkan
+import javafx.scene.control.ButtonType; 
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;    // Ditambahkan
+import javafx.scene.control.Label;    
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;   // Ditambahkan
+import javafx.scene.layout.HBox;   
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -40,10 +39,8 @@ public class UserManagementController {
     @FXML private TableColumn<User, String> lastLoginColumn; 
     @FXML private TableColumn<User, String> statusColumn;   
     @FXML private TableColumn<User, Void> actionColumn; 
-
     @FXML private Button backButton;
     @FXML private Button refreshButton;
-
     private ObservableList<User> userList;
     private UserService userService;
     private User currentUser; 

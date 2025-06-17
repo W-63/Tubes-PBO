@@ -117,4 +117,31 @@ public class EnrollmentDAO {
         }
         return enrollments;
     }
+    
+    public Enrollment getEnrollmentById(Integer id) throws SQLException {
+    String sql = "SELECT e.id, e.user_id, e.course_id, e.enrollment_date, e.progress_percentage, e.is_completed, " +
+                 "c.title as course_title " +
+                 "FROM enrollments e JOIN courses c ON e.course_id = c.id WHERE e.id = ?";
+    try (Connection conn = DBUtil.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, id);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                // Pastikan DATABASE_DATE_TIME_FORMATTER didefinisikan di EnrollmentDAO
+                LocalDateTime enrollmentDateTime = LocalDateTime.parse(rs.getString("enrollment_date"), DATABASE_DATE_TIME_FORMATTER);
+                Enrollment enrollment = new Enrollment(
+                    rs.getInt("id"),
+                    rs.getInt("user_id"),
+                    rs.getInt("course_id"),
+                    enrollmentDateTime,
+                    rs.getInt("progress_percentage"),
+                    rs.getBoolean("is_completed")
+                );
+                enrollment.setCourseTitle(rs.getString("course_title"));
+                return enrollment;
+            }
+        }
+    }
+    return null;
+}
 }
