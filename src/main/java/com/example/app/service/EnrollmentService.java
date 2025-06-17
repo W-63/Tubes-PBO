@@ -9,10 +9,11 @@ import com.example.app.model.Enrollment;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class EnrollmentService {
     private final EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
-    private final CourseDAO courseDAO = new CourseDAO(); // Perlu untuk mengambil info kelas
+    private final CourseDAO courseDAO = new CourseDAO();
 
     public void enrollUserInCourse(Integer userId, Integer courseId) throws Exception {
         if (enrollmentDAO.isUserEnrolled(userId, courseId)) {
@@ -32,27 +33,30 @@ public class EnrollmentService {
     }
 
     public void updateProgress(Integer enrollmentId, Integer newProgressValue) throws Exception {
-    if (newProgressValue < 0 || newProgressValue > 100) {
-        throw new Exception("Nilai progres harus antara 0 dan 100.");
+        if (newProgressValue < 0 || newProgressValue > 100) {
+            throw new Exception("Nilai progres harus antara 0 dan 100.");
+        }
+
+        Enrollment enrollment = enrollmentDAO.getEnrollmentById(enrollmentId);
+
+        if (enrollment == null) {
+            throw new Exception("Pendaftaran kelas tidak ditemukan.");
+        }
+
+        boolean isCompleted = (newProgressValue == 100);
+
+        enrollmentDAO.updateEnrollmentProgress(enrollmentId, newProgressValue, isCompleted);
     }
 
-    Enrollment enrollment = enrollmentDAO.getEnrollmentById(enrollmentId); // <-- LEBIH EFISIEN
-
-    if (enrollment == null) {
-        throw new Exception("Pendaftaran kelas tidak ditemukan.");
-    }
-
-    boolean isCompleted = (newProgressValue == 100);
-    enrollmentDAO.updateEnrollmentProgress(enrollmentId, newProgressValue, isCompleted);
-}
     public List<Enrollment> getAllEnrollments() throws SQLException {
         return enrollmentDAO.getAllEnrollments();
     }
 
-   public boolean isUserEnrolled(Integer userId, Integer courseId) throws SQLException {
-        
+    public boolean isUserEnrolled(Integer userId, Integer courseId) throws SQLException {
         return enrollmentDAO.isUserEnrolled(userId, courseId);
     }
-   
 
+    public Map<String, Integer> getCourseProgressSummary(Integer userId) throws SQLException {
+        return enrollmentDAO.getCourseProgressSummaryByUserId(userId);
+    }
 }

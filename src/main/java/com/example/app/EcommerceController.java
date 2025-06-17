@@ -1,3 +1,4 @@
+// Ini adalah versi EcommerceController.java yang HARUS ANDA GUNAKAN
 package com.example.app;
 
 import javafx.fxml.FXML;
@@ -13,30 +14,34 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextArea; 
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+
 import com.example.app.model.Course;
 import com.example.app.model.User;
 import com.example.app.model.Role;
 import com.example.app.service.CourseService;
 import com.example.app.service.EnrollmentService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class EcommerceController {
 
     @FXML private TextField titleField;
-    @FXML private TextArea descriptionField; 
+    @FXML private TextArea descriptionField;
     @FXML private TextField priceField;
     @FXML private TextField durationField;
     @FXML private TextField modulesField;
     @FXML private VBox formInputCourse;
     @FXML private Button addCourseButton;
+
     @FXML private TableView<Course> courseTable;
     @FXML private TableColumn<Course, String> titleColumn;
     @FXML private TableColumn<Course, String> descriptionColumn;
@@ -47,14 +52,15 @@ public class EcommerceController {
     private ObservableList<Course> courseList;
     private CourseService courseService;
     private EnrollmentService enrollmentService;
-    private User currentUser; 
+    private User currentUser;
 
     @FXML
     public void initialize() {
         courseService = new CourseService();
         enrollmentService = new EnrollmentService();
         courseList = FXCollections.observableArrayList();
-        this.currentUser = LoginController.currentLoggedInUser;
+        this.currentUser = LoginController.currentLoggedInUser; // Inisialisasi currentUser di initialize()
+
         try {
             courseService.initializeDummyCourses();
         } catch (SQLException e) {
@@ -86,17 +92,15 @@ public class EcommerceController {
 
                 enrollBtn.setOnAction(e -> {
                     Course course = getTableView().getItems().get(getIndex());
-                    if (currentUser == null) { 
-                         currentUser = LoginController.currentLoggedInUser;
-                    }
-                    if (currentUser == null) {
+                    // Pastikan currentUser valid sebelum digunakan
+                    if (LoginController.currentLoggedInUser == null) {
                         showAlert("Peringatan", "Anda harus login untuk mendaftar kelas.", Alert.AlertType.WARNING);
                         return;
                     }
                     try {
-                        enrollmentService.enrollUserInCourse(currentUser.getId(), course.getId());
+                        enrollmentService.enrollUserInCourse(LoginController.currentLoggedInUser.getId(), course.getId());
                         showAlert("Sukses", "Berhasil mendaftar ke kelas " + course.getTitle() + "!", Alert.AlertType.INFORMATION);
-                        loadCourses(); 
+                        loadCourses(); // Refresh untuk update tombol
                     } catch (Exception ex) {
                         showAlert("Gagal", "Gagal mendaftar kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
                         ex.printStackTrace();
@@ -110,16 +114,16 @@ public class EcommerceController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    User activeUser = LoginController.currentLoggedInUser; 
+                    User activeUser = LoginController.currentLoggedInUser; // Ambil user yang aktif dari static field
                     if (activeUser != null && activeUser.getRole() == Role.ADMIN) {
                         setGraphic(deleteBtn);
                         deleteBtn.setVisible(true);
                         deleteBtn.setManaged(true);
                         enrollBtn.setVisible(false);
                         enrollBtn.setManaged(false);
-                        enrolledLabel.setVisible(false); 
+                        enrolledLabel.setVisible(false);
                         enrolledLabel.setManaged(false);
-                    } else { 
+                    } else { // User biasa atau belum login
                         Course course = getTableView().getItems().get(getIndex());
                         boolean isEnrolled = false;
                         if (activeUser != null) {
@@ -132,7 +136,7 @@ public class EcommerceController {
                         }
 
                         if (isEnrolled) {
-                            setGraphic(enrolledLabel); 
+                            setGraphic(enrolledLabel);
                             enrollBtn.setVisible(false);
                             enrollBtn.setManaged(false);
                             deleteBtn.setVisible(false);
@@ -157,13 +161,8 @@ public class EcommerceController {
         loadCourses();
     }
 
-    /**
-     * Metode ini dipanggil dari HomeController untuk mengatur user yang login.
-     * Namun, untuk memastikan konsistensi, kita juga mengambil dari LoginController.currentLoggedInUser
-     * @param user Objek User yang berisi data pengguna yang login.
-     */
     public void initUserData(User user) {
-        this.currentUser = user; 
+        this.currentUser = user; // Perbarui currentUser di instance ini
         if (this.currentUser != null) {
             System.out.println("EcommerceController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
             if (currentUser.getRole() == Role.ADMIN) {
@@ -179,7 +178,7 @@ public class EcommerceController {
                 }
                 actionColumn.setVisible(true);
             }
-            courseTable.refresh(); 
+            courseTable.refresh();
         }
     }
 
@@ -244,29 +243,10 @@ public class EcommerceController {
     private void handleBack(ActionEvent event) {
         try {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            String fxmlPath;
-            String title;
-            User userToNavigate = LoginController.currentLoggedInUser;
-
-            if (userToNavigate != null && userToNavigate.getRole() == Role.ADMIN) {
-                fxmlPath = "/admin_home.fxml";
-                title = "Admin Dashboard - EDULIFE+";
-            } else {
-                fxmlPath = "/user_home.fxml";
-                title = "Beranda Pengguna - EDULIFE+";
-            }
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent homeRoot = loader.load();
-            HomeController homeController = loader.getController();
-            if (homeController != null && userToNavigate != null) {
-                homeController.setWelcomeLabel(userToNavigate); 
-            }
-
-            Scene homeScene = new Scene(homeRoot);
-            currentStage.setScene(homeScene);
-            currentStage.setTitle(title + " (" + (userToNavigate != null ? userToNavigate.getUsername() : "Guest") + ")");
-            currentStage.show();
+            // Masalah 1: Ini adalah titik penting. Kita perlu memanggil setupHomeView
+            // di HomeController untuk memastikan dashboard di-refresh.
+            HomeController homeController = new HomeController(); // Buat instance HomeController
+            homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser); // Panggil setupHomeView
 
         } catch (IOException e) {
             e.printStackTrace();

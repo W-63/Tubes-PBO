@@ -2,17 +2,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.app.HomeController"
-            prefWidth="800" prefHeight="600"
+            prefWidth="1000" prefHeight="750"
             stylesheets="@css/style.css">
 
-    <VBox alignment="CENTER" spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
+    <VBox alignment="TOP_CENTER" spacing="20" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
         <padding>
             <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
+
         <Label text="Admin Dashboard" styleClass="title-label" />
         <Label fx:id="welcomeLabel" text="Selamat datang, [Nama Admin]!" style="-fx-text-fill: white;" />
 
@@ -21,6 +23,30 @@
             <Button text="Manajemen Aktivitas Harian" styleClass="main-button" onAction="#handleDailyActivity" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220" prefHeight="60"/>
             <Button text="Manajemen Pengguna" styleClass="main-button" onAction="#handleUserManagement" GridPane.rowIndex="1" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
             </GridPane>
+
+        <Region prefHeight="20"/>
+
+        <VBox alignment="TOP_CENTER" spacing="10" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 15;" VBox.vgrow="ALWAYS">
+            <Label text="Ringkasan Progres Anda" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label fx:id="welcomeDashboardLabel" text="Data Progres Pengguna" style="-fx-text-fill: grey;"/>
+            <HBox spacing="20" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+                <VBox spacing="10" alignment="TOP_CENTER" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;" HBox.hgrow="ALWAYS">
+                    <Label text="Progres Kelas" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Label fx:id="totalCoursesLabel" text="Total Kelas: 0"/>
+                    <Label fx:id="completedCoursesLabel" text="Selesai: 0"/>
+                    <Label fx:id="inProgressCoursesLabel" text="Berjalan: 0"/>
+                    <PieChart fx:id="courseProgressChart" prefHeight="200" prefWidth="300"/>
+                </VBox>
+
+                <VBox spacing="10" alignment="TOP_CENTER" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;" HBox.hgrow="ALWAYS">
+                    <Label text="Progres Aktivitas Harian" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Label fx:id="totalActivitiesLabel" text="Total Aktivitas: 0"/>
+                    <Label fx:id="completedActivitiesLabel" text="Selesai: 0"/>
+                    <Label fx:id="pendingActivitiesLabel" text="Belum Selesai: 0"/>
+                    <PieChart fx:id="activityProgressChart" prefHeight="200" prefWidth="300"/>
+                </VBox>
+            </HBox>
+        </VBox>
 
         <Region VBox.vgrow="ALWAYS"/>
 

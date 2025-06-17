@@ -1,7 +1,5 @@
 package com.example.app;
 
-import com.example.app.HomeController;
-import com.example.app.LoginController;
 import com.example.app.dao.ToDoDAO;
 import com.example.app.dao.ToDoDAOImpl;
 import com.example.app.model.ToDoItem;
@@ -70,17 +68,17 @@ public class DailyActivityController {
         statusColumn.setCellValueFactory(cellData -> {
             ToDoItem todo = cellData.getValue();
             SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(todo.isStatus());
-          booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
+            booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
                 todo.setStatus(isNowSelected);
                 try {
                     todoDAO.updateStatus(todo.getId(), isNowSelected);
                 } catch (SQLException e) {
                     tampilkanAlert("Kesalahan Database", "Gagal memperbarui status: " + e.getMessage(), Alert.AlertType.ERROR);
-                    booleanProp.set(wasSelected); // Kembalikan ke nilai sebelumnya jika gagal
+                    booleanProp.set(wasSelected);
                     e.printStackTrace();
                 } catch (Exception e) {
                     tampilkanAlert("Kesalahan", "Terjadi kesalahan tak terduga saat memperbarui status: " + e.getMessage(), Alert.AlertType.ERROR);
-                    booleanProp.set(wasSelected); // Kembalikan ke nilai sebelumnya jika gagal
+                    booleanProp.set(wasSelected);
                     e.printStackTrace();
                 }
             });
@@ -97,23 +95,19 @@ public class DailyActivityController {
             hapusButton.setDisable(newSelection == null);
         });
 
-        muatDataToDo(); // Memuat data ToDo setelah inisialisasi
+        muatDataToDo();
     }
 
     public void initUserData(User user) {
         this.currentUser = user;
-        // Jika Anda ingin aktivitas spesifik per user, muat data di sini berdasarkan currentUser.getId()
         if (this.currentUser != null) {
             System.out.println("DailyActivityController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
-            // Jika muatDataToDo() perlu user ID, panggil di sini: muatDataToDo(currentUser.getId());
+
         }
     }
 
-
     private void muatDataToDo() {
         try {
-            // Jika ToDoDAOImpl.getAllToDos() sudah memfilter berdasarkan user_id dari LoginController.currentLoggedInUser,
-            // maka tidak perlu parameter di sini.
             todoList.setAll(todoDAO.getAllToDos());
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -150,7 +144,6 @@ public class DailyActivityController {
         }
 
         ToDoItem todo = new ToDoItem(kategori, deskripsi, tanggal, waktu);
-        // userId akan disetel di ToDoDAOImpl.addToDo() menggunakan LoginController.currentLoggedInUser.getId()
 
         try {
             todoDAO.addToDo(todo);
@@ -164,6 +157,21 @@ public class DailyActivityController {
             tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
+
+        try {
+        // Ini adalah tempat panggilan addToDo
+        todoDAO.addToDo(todo); // Sekarang ini bisa melempar Exception dari validasi
+        tampilkanAlert("Sukses", "Target berhasil ditambahkan.", Alert.AlertType.INFORMATION);
+        bersihkanInput();
+            muatDataToDo();
+        } catch (SQLException e) { // Ini hanya menangkap SQLException
+            tampilkanAlert("Kesalahan Database", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        } catch (Exception e) { // <--- TAMBAHKAN INI UNTUK MENANGKAP VALIDASI EXCEPTION
+            tampilkanAlert("Kesalahan Validasi", e.getMessage(), Alert.AlertType.WARNING); // Tampilkan pesan validasi
+            e.printStackTrace();
+        }
+
     }
 
     @FXML
