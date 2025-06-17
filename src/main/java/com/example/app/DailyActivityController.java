@@ -1,10 +1,12 @@
 package com.example.app;
 
+import com.example.app.HomeController;
+import com.example.app.LoginController;
 import com.example.app.dao.ToDoDAO;
 import com.example.app.dao.ToDoDAOImpl;
 import com.example.app.model.ToDoItem;
-import com.example.app.model.User; // Ditambahkan
-import com.example.app.model.Role; // Ditambahkan (meskipun tidak langsung dipakai di sini, baik untuk konsistensi)
+import com.example.app.model.User;
+import com.example.app.model.Role;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -43,7 +45,7 @@ public class DailyActivityController {
 
     private ToDoDAO todoDAO;
     private ObservableList<ToDoItem> todoList;
-    private User currentUser; // Untuk menyimpan info user yang login (jika diperlukan fitur spesifik user di sini)
+    private User currentUser;
 
     @FXML
     public void initialize() {
@@ -68,18 +70,18 @@ public class DailyActivityController {
         statusColumn.setCellValueFactory(cellData -> {
             ToDoItem todo = cellData.getValue();
             SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(todo.isStatus());
-            booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
+          booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
                 todo.setStatus(isNowSelected);
                 try {
-                    // Pastikan ToDoDAOImpl memiliki metode updateStatus
-                    // Jika tidak ada, Anda perlu menambahkannya di ToDoDAO dan ToDoDAOImpl
-                    // todoDAO.updateStatus(todo.getId(), isNowSelected);
-                    // Untuk saat ini, saya tinggalkan alert peringatan:
-                    tampilkanAlert("Peringatan", "Fungsi update status belum sepenuhnya diimplementasikan di DAO.", Alert.AlertType.INFORMATION);
-
+                    todoDAO.updateStatus(todo.getId(), isNowSelected);
+                } catch (SQLException e) {
+                    tampilkanAlert("Kesalahan Database", "Gagal memperbarui status: " + e.getMessage(), Alert.AlertType.ERROR);
+                    booleanProp.set(wasSelected); // Kembalikan ke nilai sebelumnya jika gagal
+                    e.printStackTrace();
                 } catch (Exception e) {
-                    tampilkanAlert("Kesalahan", "Gagal update status: " + e.getMessage(), Alert.AlertType.ERROR);
-                    booleanProp.set(wasSelected);
+                    tampilkanAlert("Kesalahan", "Terjadi kesalahan tak terduga saat memperbarui status: " + e.getMessage(), Alert.AlertType.ERROR);
+                    booleanProp.set(wasSelected); // Kembalikan ke nilai sebelumnya jika gagal
+                    e.printStackTrace();
                 }
             });
             return booleanProp;
@@ -95,33 +97,28 @@ public class DailyActivityController {
             hapusButton.setDisable(newSelection == null);
         });
 
-        muatDataToDo();
+        muatDataToDo(); // Memuat data ToDo setelah inisialisasi
     }
 
-    /**
-     * Metode ini dipanggil dari HomeController untuk mengatur user yang login.
-     * @param user Objek User yang berisi data pengguna yang login.
-     */
     public void initUserData(User user) {
         this.currentUser = user;
-        // Anda bisa menambahkan logika di sini jika DailyActivity memiliki fitur yang tergantung pada peran/user
-        if (currentUser != null) {
+        // Jika Anda ingin aktivitas spesifik per user, muat data di sini berdasarkan currentUser.getId()
+        if (this.currentUser != null) {
             System.out.println("DailyActivityController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
-            // Contoh: Jika user biasa, mungkin ada fitur terbatas
+            // Jika muatDataToDo() perlu user ID, panggil di sini: muatDataToDo(currentUser.getId());
         }
-        // Muat data spesifik user jika diperlukan
-        // muatDataToDo(currentUser.getId());
     }
+
 
     private void muatDataToDo() {
         try {
-            // Jika todoDAO.getAllToDos() perlu userId, Anda harus mendapatkan currentUser.getId()
-            // dan meneruskannya (dan mengubah signature metode di DAO)
+            // Jika ToDoDAOImpl.getAllToDos() sudah memfilter berdasarkan user_id dari LoginController.currentLoggedInUser,
+            // maka tidak perlu parameter di sini.
             todoList.setAll(todoDAO.getAllToDos());
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
-        } catch (Exception e) { // Tangkap Exception umum dari DAO (jika ada)
+        } catch (Exception e) {
             tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
@@ -140,24 +137,20 @@ public class DailyActivityController {
         }
 
         if (deskripsi.isEmpty() || tanggal == null || waktuStr.isEmpty()) {
-            tampilkanAlert("Peringatan", "Semua field harus diisi (selain kategori yang sudah dipilih).", Alert.AlertType.WARNING);
+            tampilkanAlert("Peringatan", "Semua field harus diisi.", Alert.AlertType.WARNING);
             return;
         }
 
         LocalTime waktu;
         try {
-            waktu = LocalTime.parse(waktuStr); // Format HH:mm
+            waktu = LocalTime.parse(waktuStr);
         } catch (Exception e) {
             tampilkanAlert("Format Salah", "Waktu harus dalam format HH:mm, contoh: 09:30", Alert.AlertType.WARNING);
             return;
         }
 
         ToDoItem todo = new ToDoItem(kategori, deskripsi, tanggal, waktu);
-        // Jika ToDoItem memerlukan userId, Anda harus menyetelnya di sini
-        // if (currentUser != null) {
-        //     todo.setUserId(currentUser.getId());
-        // }
-
+        // userId akan disetel di ToDoDAOImpl.addToDo() menggunakan LoginController.currentLoggedInUser.getId()
 
         try {
             todoDAO.addToDo(todo);
@@ -165,9 +158,9 @@ public class DailyActivityController {
             bersihkanInput();
             muatDataToDo();
         } catch (SQLException e) {
-            tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
+            tampilkanAlert("Kesalahan Database", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
-        } catch (Exception e) { // Tangkap Exception umum dari DAO
+        } catch (Exception e) {
             tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
@@ -186,9 +179,9 @@ public class DailyActivityController {
             tampilkanAlert("Sukses", "Target berhasil dihapus.", Alert.AlertType.INFORMATION);
             muatDataToDo();
         } catch (SQLException e) {
-            tampilkanAlert("Kesalahan", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
+            tampilkanAlert("Kesalahan Database", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
-        } catch (Exception e) { // Tangkap Exception umum dari DAO
+        } catch (Exception e) {
             tampilkanAlert("Kesalahan", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
@@ -201,12 +194,6 @@ public class DailyActivityController {
         waktuField.clear();
     }
 
-    /**
-     * Menampilkan alert dialog.
-     * @param judul Judul alert.
-     * @param isi Isi pesan alert.
-     * @param alertType Jenis alert (INFORMATION, WARNING, ERROR, dll.).
-     */
     private void tampilkanAlert(String judul, String isi, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(judul);
@@ -215,21 +202,12 @@ public class DailyActivityController {
         alert.showAndWait();
     }
 
-    /**
-     * Menangani aksi tombol kembali untuk navigasi ke halaman Home.
-     * Ini akan mengarahkan Admin ke admin_home.fxml dan User ke user_home.fxml.
-     * @param event ActionEvent dari tombol yang diklik.
-     */
     @FXML
     private void handleKembaliKeHome(ActionEvent event) {
         try {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            // Panggil HomeController untuk menangani navigasi kembali ke Home
-            // Ini akan memastikan FXML Home yang sesuai (admin_home.fxml atau user_home.fxml) dimuat.
             HomeController homeController = new HomeController();
-            // Penting: Teruskan user yang saat ini login ke HomeController
-            // Diasumsikan LoginController.currentLoggedInUser selalu menyimpan user yang benar.
             homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser);
 
         } catch (IOException e) {

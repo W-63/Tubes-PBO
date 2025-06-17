@@ -40,21 +40,17 @@ public class ToDoDAOImpl implements ToDoDAO {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Pastikan Anda mendapatkan userId dari user yang sedang login
-            // Asumsi LoginController.currentLoggedInUser tidak null saat menambah ToDo
             if (LoginController.currentLoggedInUser != null) {
                 todo.setUserId(LoginController.currentLoggedInUser.getId());
             } else {
-                // Tangani kasus user belum login (atau set ID dummy/throw error)
                 System.err.println("addToDo: User tidak login, ToDoItem mungkin tidak terkait.");
-                // throw new SQLException("User tidak login saat mencoba menambah ToDo.");
             }
 
             stmt.setInt(1, todo.getUserId());
             stmt.setString(2, todo.getKategori());
             stmt.setString(3, todo.getDeskripsi());
-            stmt.setDate(4, Date.valueOf(todo.getTanggal())); // Konversi LocalDate ke java.sql.Date
-            stmt.setTime(5, Time.valueOf(todo.getWaktu()));   // Konversi LocalTime ke java.sql.Time
+            stmt.setDate(4, Date.valueOf(todo.getTanggal())); 
+            stmt.setTime(5, Time.valueOf(todo.getWaktu()));   
             stmt.setBoolean(6, todo.isStatus());
             stmt.executeUpdate();
 
@@ -69,7 +65,6 @@ public class ToDoDAOImpl implements ToDoDAO {
     @Override
     public List<ToDoItem> getAllToDos() throws SQLException {
         List<ToDoItem> todos = new ArrayList<>();
-        // Ambil ToDoItem hanya untuk user yang sedang login
         String sql = "SELECT id, user_id, kategori, deskripsi, tanggal, waktu, status FROM todo_items WHERE user_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
