@@ -269,6 +269,32 @@ public class HomeController {
         }
     }
 
+    @FXML
+    private void handleModuleManagement(ActionEvent event) {
+        try {
+            if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/module_management_view.fxml"));
+                Parent root = loader.load();
+
+                ModuleManagementController moduleManController = loader.getController();
+                if (moduleManController != null) {
+                    moduleManController.initUserData(currentUser); // Teruskan admin yang login
+                }
+
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Manajemen Modul - EDULIFE+");
+                stage.show();
+            } else {
+                showAlert("Akses Ditolak", "Anda tidak memiliki izin untuk mengakses fitur ini.", Alert.AlertType.WARNING);
+            }
+        } catch (IOException e) {
+            showError("Gagal membuka halaman Manajemen Modul.", e);
+        } catch (Exception e) {
+            showError("Terjadi kesalahan tak terduga.", e);
+        }
+    }
+
     private void showError(String message, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Kesalahan");

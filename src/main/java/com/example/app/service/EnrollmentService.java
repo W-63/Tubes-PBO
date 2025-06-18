@@ -1,3 +1,4 @@
+// Ini adalah versi EnrollmentService.java yang HARUS ANDA GUNAKAN
 package com.example.app.service;
 
 import com.example.app.LoginController;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class EnrollmentService {
     private final EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
     private final CourseDAO courseDAO = new CourseDAO();
+    private final ModuleService moduleService = new ModuleService(); // Untuk info modul
 
     public void enrollUserInCourse(Integer userId, Integer courseId) throws Exception {
         if (enrollmentDAO.isUserEnrolled(userId, courseId)) {
@@ -32,21 +34,39 @@ public class EnrollmentService {
         return enrollmentDAO.getEnrollmentsByUserId(userId);
     }
 
-    public void updateProgress(Integer enrollmentId, Integer newProgressValue) throws Exception {
-        if (newProgressValue < 0 || newProgressValue > 100) {
-            throw new Exception("Nilai progres harus antara 0 dan 100.");
+    /**
+     * Memperbarui progres enrollment berdasarkan jumlah modul yang diselesaikan.
+     * Metode ini akan dipanggil saat progres modul individual berubah.
+     * @param enrollmentId ID pendaftaran kelas.
+     * @param userId ID pengguna.
+     * @param courseId ID kelas.
+     * @throws Exception Jika pendaftaran atau kelas tidak ditemukan, atau error database.
+     */
+    public void updateProgressBasedOnModules(Integer enrollmentId, Integer userId, Integer courseId) throws Exception {
+        int totalModules = moduleService.getTotalModulesInCourse(courseId);
+        int completedModules = moduleService.getCompletedModulesCount(userId, courseId);
+
+        if (totalModules == 0) {
+            // Jika tidak ada modul, anggap 0% progres atau selesaikan jika tidak ada yang harus diselesaikan
+            enrollmentDAO.updateEnrollmentProgress(enrollmentId, 0, true); // Anggap selesai jika tidak ada modul
+            return;
         }
 
-        Enrollment enrollment = enrollmentDAO.getEnrollmentById(enrollmentId);
+        int newProgressPercentage = (int) Math.round((double) completedModules / totalModules * 100);
+        if (newProgressPercentage > 100) newProgressPercentage = 100; // Pastikan tidak lebih dari 100
 
-        if (enrollment == null) {
-            throw new Exception("Pendaftaran kelas tidak ditemukan.");
-        }
+        boolean isCompleted = (newProgressPercentage == 100);
 
-        boolean isCompleted = (newProgressValue == 100);
-
-        enrollmentDAO.updateEnrollmentProgress(enrollmentId, newProgressValue, isCompleted);
+        enrollmentDAO.updateEnrollmentProgress(enrollmentId, newProgressPercentage, isCompleted);
     }
+
+    // Metode updateProgress sebelumnya yang menerima persentase langsung, harus dihapus
+    // Jika Anda masih memiliki ini, hapus:
+    /*
+    public void updateProgress(Integer enrollmentId, Integer newProgressValue) throws Exception {
+        // ... (kode lama) ...
+    }
+    */
 
     public List<Enrollment> getAllEnrollments() throws SQLException {
         return enrollmentDAO.getAllEnrollments();

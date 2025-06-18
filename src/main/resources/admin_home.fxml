@@ -22,7 +22,7 @@
             <Button text="Manajemen E-Commerce" styleClass="main-button" onAction="#handleEcommerce" GridPane.rowIndex="0" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
             <Button text="Manajemen Aktivitas Harian" styleClass="main-button" onAction="#handleDailyActivity" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220" prefHeight="60"/>
             <Button text="Manajemen Pengguna" styleClass="main-button" onAction="#handleUserManagement" GridPane.rowIndex="1" GridPane.columnIndex="0" prefWidth="220" prefHeight="60"/>
-            </GridPane>
+            <Button text="Manajemen Modul" styleClass="main-button" onAction="#handleModuleManagement" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="220" prefHeight="60"/> </GridPane>
 
         <Region prefHeight="20"/>
 

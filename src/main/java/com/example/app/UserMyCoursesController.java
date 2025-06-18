@@ -3,8 +3,10 @@ package com.example.app;
 import com.example.app.model.Course;
 import com.example.app.model.Enrollment;
 import com.example.app.model.User;
-import com.example.app.model.Role; 
+import com.example.app.model.Role;
+import com.example.app.service.CourseService;
 import com.example.app.service.EnrollmentService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,9 +22,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.scene.control.ProgressBar; 
-import javafx.scene.layout.HBox; 
-import javafx.scene.control.Label; 
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -32,11 +35,13 @@ public class UserMyCoursesController {
     @FXML private TableView<Enrollment> myCoursesTable;
     @FXML private TableColumn<Enrollment, String> courseTitleColumn;
     @FXML private TableColumn<Enrollment, String> enrollmentDateColumn;
-    @FXML private TableColumn<Enrollment, Number> progressColumn; 
-    @FXML private TableColumn<Enrollment, String> statusColumn; 
-    @FXML private TableColumn<Enrollment, Void> actionColumn; 
+    @FXML private TableColumn<Enrollment, Number> progressColumn;
+    @FXML private TableColumn<Enrollment, String> statusColumn;
+    @FXML private TableColumn<Enrollment, Void> actionColumn; // Ini akan menjadi kolom "Lanjutkan Belajar"
+
     @FXML private Button backButton;
     @FXML private Button refreshButton;
+
     private ObservableList<Enrollment> myEnrollmentList;
     private EnrollmentService enrollmentService;
     private User currentUser;
@@ -72,43 +77,44 @@ public class UserMyCoursesController {
             }
         });
 
-
         statusColumn.setCellValueFactory(cellData -> {
             Boolean isCompleted = cellData.getValue().getIsCompleted();
             return new javafx.beans.property.SimpleStringProperty(isCompleted ? "Selesai" : "Berjalan");
         });
 
         actionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button continueBtn = new Button("Lanjutkan Belajar");
-            private final Button completeBtn = new Button("Tandai Selesai"); 
-            private final Button certificateBtn = new Button("Lihat Sertifikat"); 
+            private final Button continueBtn = new Button("Lanjutkan");
+            private final Button certificateBtn = new Button("Sertifikat"); // Tombol Lihat Sertifikat
+            // completeBtn dihapus karena progres akan dihitung dari modul
+
             {
                 continueBtn.setOnAction(e -> {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
-            
-                    int currentProgress = enrollment.getProgressPercentage();
-                    int newProgress = currentProgress + 10; 
-                    if (newProgress > 100) newProgress = 100;
-
+                    // --- NAVIGASI KE HALAMAN DETAIL KELAS ---
                     try {
-                        enrollmentService.updateProgress(enrollment.getId(), newProgress); 
-                        showAlert("Progres", "Progres kelas " + enrollment.getCourseTitle() + " diperbarui menjadi " + newProgress + "%.", Alert.AlertType.INFORMATION);
-                        loadMyEnrollments(); 
-                    } catch (Exception ex) {
-                        showAlert("Gagal", "Gagal memperbarui progres: " + ex.getMessage(), Alert.AlertType.ERROR);
-                    }
-                });
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/course_detail_for_user.fxml"));
+                        Parent root = loader.load();
 
-                completeBtn.setOnAction(e -> {
-                    Enrollment enrollment = getTableView().getItems().get(getIndex());
-                    if (!enrollment.getIsCompleted()) {
-                        try {
-                            enrollmentService.updateProgress(enrollment.getId(), 100); 
-                            showAlert("Sukses", "Kelas " + enrollment.getCourseTitle() + " ditandai selesai!", Alert.AlertType.INFORMATION);
-                            loadMyEnrollments();
-                        } catch (Exception ex) {
-                            showAlert("Gagal", "Gagal menandai selesai: " + ex.getMessage(), Alert.AlertType.ERROR);
+                        CourseDetailForUserController controller = loader.getController();
+                        // Dapatkan objek Course yang sebenarnya dari database jika perlu detail lengkap
+                        // Atau pastikan Enrollment juga membawa objek Course
+                        // Untuk saat ini, kita bisa mendapatkan Course dari DAO
+                        Course course = new CourseService().getCourseById(enrollment.getCourseId());
+
+                        if (controller != null && course != null && currentUser != null) {
+                            controller.initData(course, enrollment, currentUser); // Teruskan Course, Enrollment, dan User
+                        } else {
+                            showAlert("Error", "Gagal memuat detail kelas.", Alert.AlertType.ERROR);
+                            return;
                         }
+
+                        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.setTitle("Detail Kelas - " + course.getTitle());
+                        stage.show();
+                    } catch (IOException | SQLException ex) {
+                        showAlert("Kesalahan", "Gagal membuka detail kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
+                        ex.printStackTrace();
                     }
                 });
                 
@@ -130,15 +136,16 @@ public class UserMyCoursesController {
                 } else {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
                     if (enrollment.getIsCompleted()) {
-                        setGraphic(certificateBtn);
+                        setGraphic(certificateBtn); // Jika selesai, tampilkan tombol sertifikat
                     } else {
-                        setGraphic(new HBox(5, continueBtn, completeBtn)); 
+                        setGraphic(continueBtn); // Jika belum, tampilkan tombol lanjutkan
                     }
                 }
             }
         });
 
         myCoursesTable.setItems(myEnrollmentList);
+        // Data akan dimuat di initUserData
     }
 
     /**
