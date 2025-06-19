@@ -10,7 +10,6 @@ import java.util.List;
 
 public class UserModuleProgressDAO {
 
-    // Menggunakan formatter yang sama dengan EnrollmentDAO
     private static final DateTimeFormatter DATABASE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public void addOrUpdateUserModuleProgress(UserModuleProgress progress) throws SQLException {
@@ -21,7 +20,6 @@ public class UserModuleProgressDAO {
             stmt.setInt(1, progress.getUserId());
             stmt.setInt(2, progress.getModuleId());
             stmt.setBoolean(3, progress.getIsCompleted());
-            // Simpan completionDate sebagai String jika tidak null, atau null
             if (progress.getCompletionDate() != null) {
                 stmt.setString(4, progress.getCompletionDate().format(DATABASE_DATE_TIME_FORMATTER));
             } else {

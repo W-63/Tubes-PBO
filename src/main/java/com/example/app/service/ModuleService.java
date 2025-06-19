@@ -3,12 +3,16 @@ package com.example.app.service;
 import com.example.app.dao.ModuleDAO;
 import com.example.app.dao.UserModuleProgressDAO;
 import com.example.app.model.Module;
+import com.example.app.model.ModuleDisplayWrapper;
 import com.example.app.model.UserModuleProgress;
 import com.example.app.LoginController; // Untuk mendapatkan ID user yang login
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModuleService {
     private final ModuleDAO moduleDAO = new ModuleDAO();
@@ -103,5 +107,21 @@ public class ModuleService {
         if (module.getModuleType() == null || module.getModuleType().trim().isEmpty()) {
             throw new Exception("Tipe modul tidak boleh kosong (misal: VIDEO, TEXT, QUIZ).");
         }
+    }
+     public List<ModuleDisplayWrapper> getModulesWithProgressForUser(Integer userId, Integer courseId) throws SQLException {
+        List<Module> modules = moduleDAO.getModulesByCourseId(courseId);
+        List<UserModuleProgress> userProgresses = userModuleProgressDAO.getUserProgressByCourseId(userId, courseId);
+
+        Map<Integer, UserModuleProgress> progressMap = new HashMap<>();
+        for (UserModuleProgress ump : userProgresses) {
+            progressMap.put(ump.getModuleId(), ump);
+        }
+
+        List<ModuleDisplayWrapper> displayList = new ArrayList<>();
+        for (Module module : modules) {
+            UserModuleProgress ump = progressMap.get(module.getId());
+            displayList.add(new ModuleDisplayWrapper(module, ump));
+        }
+        return displayList;
     }
 }
