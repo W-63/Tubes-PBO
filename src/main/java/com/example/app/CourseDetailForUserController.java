@@ -2,11 +2,10 @@ package com.example.app;
 
 import com.example.app.LoginController;
 import com.example.app.model.Course;
-import com.example.app.model.Module; // Tetap diimpor karena ModuleDisplayWrapper membungkusnya
-import com.example.app.model.ModuleDisplayWrapper; // Ditambahkan
+import com.example.app.model.Module;
+import com.example.app.model.ModuleDisplayWrapper;
 import com.example.app.model.Enrollment;
 import com.example.app.model.User;
-import com.example.app.model.UserModuleProgress;
 import com.example.app.service.CourseService;
 import com.example.app.service.EnrollmentService;
 import com.example.app.service.ModuleService;
@@ -29,12 +28,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.scene.control.CheckBox; // Ditambahkan untuk CheckBox kustom
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional; // Ditambahkan
 
 public class CourseDetailForUserController {
 
@@ -45,25 +46,25 @@ public class CourseDetailForUserController {
     @FXML private Label courseTotalModulesLabel;
     @FXML private Label courseProgressPercentageLabel;
 
-    @FXML private TableView<ModuleDisplayWrapper> modulesTable; // Diubah ke ModuleDisplayWrapper
+    @FXML private TableView<ModuleDisplayWrapper> modulesTable;
     @FXML private TableColumn<ModuleDisplayWrapper, Integer> moduleNumberColumn;
     @FXML private TableColumn<ModuleDisplayWrapper, String> moduleTitleColumn;
     @FXML private TableColumn<ModuleDisplayWrapper, String> moduleTypeColumn;
     @FXML private TableColumn<ModuleDisplayWrapper, Integer> moduleDurationColumn;
-    @FXML private TableColumn<ModuleDisplayWrapper, Boolean> moduleCompletedColumn; // Checkbox selesai
+    @FXML private TableColumn<ModuleDisplayWrapper, Boolean> moduleCompletedColumn;
 
     @FXML private Button backButton;
     @FXML private Button refreshButton;
 
     private Course selectedCourse;
     private User currentUser;
-    private Enrollment enrollment;
+    private Enrollment enrollment; // Enrollment yang sedang aktif untuk kelas ini
 
     private CourseService courseService;
     private ModuleService moduleService;
     private EnrollmentService enrollmentService;
 
-    private ObservableList<ModuleDisplayWrapper> moduleList; // Diubah ke ModuleDisplayWrapper
+    private ObservableList<ModuleDisplayWrapper> moduleList;
 
     @FXML
     public void initialize() {
@@ -78,49 +79,65 @@ public class CourseDetailForUserController {
         moduleTypeColumn.setCellValueFactory(new PropertyValueFactory<>("moduleType"));
         moduleDurationColumn.setCellValueFactory(new PropertyValueFactory<>("durationMinutes"));
 
-        // Kolom checkbox "Selesai" menggunakan properti dari ModuleDisplayWrapper
-        // PropertyValueFactory akan mencari "completedForUserProperty()" atau "getCompletedForUser()"
-        moduleCompletedColumn.setCellValueFactory(new PropertyValueFactory<>("completedForUser"));
-        moduleCompletedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(moduleCompletedColumn));
+        moduleCompletedColumn.setCellValueFactory(cellData -> cellData.getValue().completedForUserProperty());
+        moduleCompletedColumn.setCellFactory(column -> {
+            return new TableCell<ModuleDisplayWrapper, Boolean>() {
+                private final CheckBox checkBox = new CheckBox();
 
-        // Listener untuk perubahan status checkbox
-        moduleCompletedColumn.setOnEditCommit(event -> {
-            ModuleDisplayWrapper wrapper = event.getRowValue();
-            boolean isNowCompleted = event.getNewValue(); // Nilai baru dari checkbox
+                {
+                    checkBox.setOnAction(event -> {
+                        System.out.println("DEBUG: Checkbox clicked directly for module ID: " + getItem() + " (Item ID: " + (getTableView().getItems().get(getIndex()).getId()) + ")");
 
-            try {
-                if (currentUser == null || selectedCourse == null || enrollment == null || wrapper.getId() == null) {
-                    showAlert("Error", "Sesi atau data tidak valid. Harap login kembali.", Alert.AlertType.ERROR);
-                    modulesTable.refresh(); // Refresh untuk reset checkbox jika ada masalah
-                    return;
+                        ModuleDisplayWrapper wrapper = getTableView().getItems().get(getIndex());
+                        boolean isNowCompleted = checkBox.isSelected();
+
+                        System.out.println("DEBUG: Attempting to update progress for module: " + wrapper.getTitle() + ", new status: " + isNowCompleted);
+
+                        try {
+                            if (currentUser == null || selectedCourse == null || enrollment == null || wrapper.getId() == null) {
+                                showAlert("Error", "Sesi atau data tidak valid. Harap login kembali.", Alert.AlertType.ERROR);
+                                checkBox.setSelected(!isNowCompleted);
+                                return;
+                            }
+
+                            moduleService.updateModuleCompletionStatus(wrapper.getId(), isNowCompleted);
+                            showAlert("Sukses", "Progres modul '" + wrapper.getTitle() + "' diperbarui.", Alert.AlertType.INFORMATION);
+
+                            if (enrollment.getId() != 0 && currentUser.getId() != 0 && selectedCourse.getId() != 0) {
+                                enrollmentService.updateProgressBasedOnModules(enrollment.getId(), currentUser.getId(), selectedCourse.getId());
+                                System.out.println("DEBUG: Enrollment progress update call to service successful.");
+                            } else {
+                                System.err.println("Error: enrollment, currentUser, atau selectedCourse ID null saat update progres kelas.");
+                            }
+
+                            loadCourseAndModules(selectedCourse, enrollment);
+                            System.out.println("DEBUG: loadCourseAndModules called after update.");
+
+                        } catch (Exception e) {
+                            System.err.println("DEBUG: Exception caught during module progress update!");
+                            showAlert("Gagal", "Gagal memperbarui progres modul: " + e.getMessage(), Alert.AlertType.ERROR);
+                            e.printStackTrace();
+                            checkBox.setSelected(!isNowCompleted);
+                        }
+                    });
                 }
 
-                // Update status modul di database
-                moduleService.updateModuleCompletionStatus(wrapper.getId(), isNowCompleted);
-                showAlert("Sukses", "Progres modul '" + wrapper.getTitle() + "' diperbarui.", Alert.AlertType.INFORMATION);
-
-                // Setelah modul diperbarui, perbarui juga progres kelas keseluruhan
-                if (enrollment.getId() != 0 && currentUser.getId() != 0 && selectedCourse.getId() != 0) {
-                    enrollmentService.updateProgressBasedOnModules(enrollment.getId(), currentUser.getId(), selectedCourse.getId());
-                } else {
-                    System.err.println("Error: enrollment, currentUser, atau selectedCourse ID bernilai 0 saat update progres kelas.");
+                @Override
+                protected void updateItem(Boolean completed, boolean empty) {
+                    super.updateItem(completed, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        checkBox.setSelected(completed);
+                        setGraphic(checkBox);
+                    }
                 }
-
-                // Muat ulang data untuk update UI, termasuk persentase progres kelas
-                loadCourseAndModules(selectedCourse, enrollment); // Pastikan ini akan memuat ulang data terbaru
-            } catch (Exception e) {
-                showAlert("Gagal", "Gagal memperbarui progres modul: " + e.getMessage(), Alert.AlertType.ERROR);
-                e.printStackTrace();
-                // Kembalikan nilai checkbox di UI jika terjadi error
-                wrapper.setCompletedForUser(!isNowCompleted); // Set kembali nilai lama
-                modulesTable.refresh(); // Refresh tabel untuk menampilkan nilai lama
-            }
+            };
         });
 
         modulesTable.setItems(moduleList);
-        modulesTable.setEditable(true); // Agar checkbox bisa diinteraksi
-        moduleCompletedColumn.setEditable(true); // Agar kolom checkbox bisa diedit
-
+        modulesTable.setEditable(true);
+        moduleCompletedColumn.setEditable(true);
     }
 
     public void initData(Course course, Enrollment enrollment, User user) {
@@ -137,15 +154,41 @@ public class CourseDetailForUserController {
 
     private void loadCourseAndModules(Course course, Enrollment enrollment) {
         try {
+            // --- LOGIKA DETEKSI DAN RESET MODUL BARU ---
+            int currentTotalModulesInCourse = moduleService.getTotalModulesInCourse(course.getId());
+            if (currentTotalModulesInCourse > course.getTotalModules()) { // Jika total modul di DB > total modul saat enrollment
+                showAlert("Pembaruan Kelas", "Kelas ini telah diperbarui dengan modul baru! Progres Anda di kelas ini akan direset.", Alert.AlertType.INFORMATION);
+                
+                // Reset progres enrollment
+                if (enrollment.getId() != 0 && currentUser.getId() != 0 && selectedCourse.getId() != 0) {
+                    enrollmentService.enrollUserInCourse(currentUser.getId(), selectedCourse.getId()); // Panggil enrollUserInCourse untuk reset
+                    // enrollmentService.updateProgressBasedOnModules(enrollment.getId(), currentUser.getId(), selectedCourse.getId()); // Ini akan dipanggil di enrollUserInCourse
+                    
+                    // Update objek course dengan total modul yang baru (dari DB)
+                    this.selectedCourse = courseService.getCourseById(course.getId());
+                    if(this.selectedCourse != null) {
+                        course.setTotalModules(this.selectedCourse.getTotalModules());
+                    }
+
+                    // Ambil kembali enrollment yang sudah direset
+                    Optional<Enrollment> updatedEnrollmentOpt = enrollmentService.getEnrollmentByUserIdAndCourseId(currentUser.getId(), selectedCourse.getId());
+                    if(updatedEnrollmentOpt.isPresent()) {
+                        this.enrollment = updatedEnrollmentOpt.get();
+                    }
+                } else {
+                    System.err.println("Error: Tidak bisa mereset progres karena ID tidak valid.");
+                }
+            }
+
+
             // Tampilkan detail kelas
             courseTitleLabel.setText(course.getTitle());
             courseDescriptionLabel.setText(course.getDescription());
             coursePriceLabel.setText("Harga: Rp" + course.getPrice());
             courseDurationLabel.setText("Durasi: " + course.getDurationWeeks() + " Minggu");
-            courseTotalModulesLabel.setText("Total Modul: " + course.getTotalModules());
-
+            courseTotalModulesLabel.setText("Total Modul: " + course.getTotalModules()); // Pastikan ini updated
+            
             // Ambil enrollment terbaru untuk mendapatkan progres yang akurat setelah update
-            // Ini penting karena objek `enrollment` yang diteruskan mungkin bukan yang terbaru setelah update progres
             Enrollment currentEnrollmentStatus = enrollmentService.getUserEnrollments(currentUser.getId())
                                                                  .stream()
                                                                  .filter(e -> e.getCourseId().equals(course.getId()))
@@ -162,7 +205,7 @@ public class CourseDetailForUserController {
             List<ModuleDisplayWrapper> wrappers = moduleService.getModulesWithProgressForUser(currentUser.getId(), course.getId());
             moduleList.setAll(wrappers);
 
-            modulesTable.refresh(); // Penting untuk me-refresh cell factories
+            modulesTable.refresh();
         } catch (SQLException e) {
             showAlert("Kesalahan Database", "Gagal memuat detail kelas atau modul: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -185,13 +228,12 @@ public class CourseDetailForUserController {
         try {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            // Kembali ke halaman Kelas Saya
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_my_courses.fxml"));
             Parent myCoursesRoot = loader.load();
 
             UserMyCoursesController myCoursesController = loader.getController();
             if (myCoursesController != null) {
-                myCoursesController.initUserData(LoginController.currentLoggedInUser); // Teruskan user
+                myCoursesController.initUserData(LoginController.currentLoggedInUser);
             }
 
             Scene myCoursesScene = new Scene(myCoursesRoot);

@@ -4,7 +4,7 @@ import com.example.app.model.Course;
 import com.example.app.model.Enrollment;
 import com.example.app.model.User;
 import com.example.app.model.Role;
-import com.example.app.service.CourseService;
+import com.example.app.service.CourseService; // Harus ada
 import com.example.app.service.EnrollmentService;
 
 import javafx.collections.FXCollections;
@@ -32,25 +32,29 @@ import java.time.format.DateTimeFormatter;
 
 public class UserMyCoursesController {
 
+    // FXML elements untuk satu tabel Enrollment
     @FXML private TableView<Enrollment> myCoursesTable;
     @FXML private TableColumn<Enrollment, String> courseTitleColumn;
     @FXML private TableColumn<Enrollment, String> enrollmentDateColumn;
     @FXML private TableColumn<Enrollment, Number> progressColumn;
     @FXML private TableColumn<Enrollment, String> statusColumn;
-    @FXML private TableColumn<Enrollment, Void> actionColumn; // Ini akan menjadi kolom "Lanjutkan Belajar"
+    @FXML private TableColumn<Enrollment, Void> actionColumn; // Kolom "Lanjutkan" / "Sertifikat"
 
     @FXML private Button backButton;
     @FXML private Button refreshButton;
 
     private ObservableList<Enrollment> myEnrollmentList;
     private EnrollmentService enrollmentService;
+    private CourseService courseService; // Diperlukan untuk CourseService().getCourseById()
     private User currentUser;
 
     @FXML
     public void initialize() {
         enrollmentService = new EnrollmentService();
+        courseService = new CourseService(); // Inisialisasi CourseService
         myEnrollmentList = FXCollections.observableArrayList();
 
+        // Inisialisasi kolom tabel Enrollment
         courseTitleColumn.setCellValueFactory(new PropertyValueFactory<>("courseTitle"));
         enrollmentDateColumn.setCellValueFactory(cellData -> {
             return new javafx.beans.property.SimpleStringProperty(
@@ -59,22 +63,24 @@ public class UserMyCoursesController {
         });
 
         progressColumn.setCellValueFactory(new PropertyValueFactory<>("progressPercentage"));
-        progressColumn.setCellFactory(column -> new TableCell<Enrollment, Number>() {
-            private final ProgressBar progressBar = new ProgressBar();
-            private final Label progressLabel = new Label();
-            private final HBox container = new HBox(5, progressBar, progressLabel);
+        progressColumn.setCellFactory(column -> {
+            return new TableCell<Enrollment, Number>() {
+                private final ProgressBar progressBar = new ProgressBar();
+                private final Label progressLabel = new Label();
+                private final HBox container = new HBox(5, progressBar, progressLabel);
 
-            @Override
-            protected void updateItem(Number progress, boolean empty) {
-                super.updateItem(progress, empty);
-                if (empty || progress == null) {
-                    setGraphic(null);
-                } else {
-                    progressBar.setProgress(progress.doubleValue() / 100.0);
-                    progressLabel.setText(String.format("%.0f%%", progress.doubleValue()));
-                    setGraphic(container);
+                @Override
+                protected void updateItem(Number progress, boolean empty) {
+                    super.updateItem(progress, empty);
+                    if (empty || progress == null) {
+                        setGraphic(null);
+                    } else {
+                        progressBar.setProgress(progress.doubleValue() / 100.0);
+                        progressLabel.setText(String.format("%.0f%%", progress.doubleValue()));
+                        setGraphic(container);
+                    }
                 }
-            }
+            };
         });
 
         statusColumn.setCellValueFactory(cellData -> {
@@ -82,32 +88,29 @@ public class UserMyCoursesController {
             return new javafx.beans.property.SimpleStringProperty(isCompleted ? "Selesai" : "Berjalan");
         });
 
-        actionColumn.setCellFactory(param -> new TableCell<>() {
+       // Di UserMyCoursesController.java
+    actionColumn.setCellFactory(param -> {
+        return new TableCell<>() {
             private final Button continueBtn = new Button("Lanjutkan");
-            private final Button certificateBtn = new Button("Sertifikat"); // Tombol Lihat Sertifikat
-            // completeBtn dihapus karena progres akan dihitung dari modul
+            private final Button certificateBtn = new Button("Sertifikat");
+            private final Button viewModulesBtn = new Button("Lihat Modul"); // BARU
 
             {
                 continueBtn.setOnAction(e -> {
+                    // ... (kode yang sama untuk navigasi ke detail kelas) ...
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
-                    // --- NAVIGASI KE HALAMAN DETAIL KELAS ---
                     try {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/course_detail_for_user.fxml"));
                         Parent root = loader.load();
-
                         CourseDetailForUserController controller = loader.getController();
-                        // Dapatkan objek Course yang sebenarnya dari database jika perlu detail lengkap
-                        // Atau pastikan Enrollment juga membawa objek Course
-                        // Untuk saat ini, kita bisa mendapatkan Course dari DAO
-                        Course course = new CourseService().getCourseById(enrollment.getCourseId());
-
+                        CourseService courseService = new CourseService();
+                        Course course = courseService.getCourseById(enrollment.getCourseId());
                         if (controller != null && course != null && currentUser != null) {
-                            controller.initData(course, enrollment, currentUser); // Teruskan Course, Enrollment, dan User
+                            controller.initData(course, enrollment, currentUser);
                         } else {
                             showAlert("Error", "Gagal memuat detail kelas.", Alert.AlertType.ERROR);
                             return;
                         }
-
                         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                         stage.setScene(new Scene(root));
                         stage.setTitle("Detail Kelas - " + course.getTitle());
@@ -117,13 +120,38 @@ public class UserMyCoursesController {
                         ex.printStackTrace();
                     }
                 });
-                
+
                 certificateBtn.setOnAction(e -> {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
                     if (enrollment.getIsCompleted()) {
                         showAlert("Sertifikat", "Selamat! Anda telah menyelesaikan kelas " + enrollment.getCourseTitle() + ".\nSertifikat Anda telah dibuat (simulasi).", Alert.AlertType.INFORMATION);
                     } else {
                         showAlert("Peringatan", "Kelas belum selesai untuk mendapatkan sertifikat.", Alert.AlertType.WARNING);
+                    }
+                });
+
+                viewModulesBtn.setOnAction(e -> { // BARU
+                    // Kode yang sama dengan continueBtn untuk navigasi ke detail kelas
+                    Enrollment enrollment = getTableView().getItems().get(getIndex());
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/course_detail_for_user.fxml"));
+                        Parent root = loader.load();
+                        CourseDetailForUserController controller = loader.getController();
+                        CourseService courseService = new CourseService();
+                        Course course = courseService.getCourseById(enrollment.getCourseId());
+                        if (controller != null && course != null && currentUser != null) {
+                            controller.initData(course, enrollment, currentUser);
+                        } else {
+                            showAlert("Error", "Gagal memuat detail kelas.", Alert.AlertType.ERROR);
+                            return;
+                        }
+                        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.setTitle("Detail Kelas (Selesai) - " + course.getTitle());
+                        stage.show();
+                    } catch (IOException | SQLException ex) {
+                        showAlert("Kesalahan", "Gagal membuka detail kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
+                        ex.printStackTrace();
                     }
                 });
             }
@@ -136,26 +164,24 @@ public class UserMyCoursesController {
                 } else {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
                     if (enrollment.getIsCompleted()) {
-                        setGraphic(certificateBtn); // Jika selesai, tampilkan tombol sertifikat
+                        // Tampilkan kedua tombol jika selesai
+                        setGraphic(new HBox(5, certificateBtn, viewModulesBtn)); // BARU
                     } else {
-                        setGraphic(continueBtn); // Jika belum, tampilkan tombol lanjutkan
+                        setGraphic(continueBtn);
                     }
                 }
             }
-        });
+        };
+    });
 
         myCoursesTable.setItems(myEnrollmentList);
         // Data akan dimuat di initUserData
     }
 
-    /**
-     * Dipanggil dari HomeController untuk mengatur user yang login.
-     * @param user User yang sedang login.
-     */
     public void initUserData(User user) {
         this.currentUser = user;
         if (this.currentUser != null) {
-            loadMyEnrollments();
+            loadMyEnrollments(); // Hanya memuat data untuk satu tabel
         } else {
             showAlert("Error", "Data pengguna tidak ditemukan. Harap login kembali.", Alert.AlertType.ERROR);
         }
@@ -164,6 +190,7 @@ public class UserMyCoursesController {
     private void loadMyEnrollments() {
         if (currentUser == null) return;
         try {
+            // Memuat SEMUA enrollment pengguna
             myEnrollmentList.setAll(enrollmentService.getUserEnrollments(currentUser.getId()));
         } catch (SQLException e) {
             showAlert("Kesalahan", "Gagal memuat kelas saya: " + e.getMessage(), Alert.AlertType.ERROR);

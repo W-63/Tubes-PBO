@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public class EnrollmentDAO {
+public class EnrollmentDAO { // Hanya ada satu kelas publik di sini
 
     private static final DateTimeFormatter DATABASE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -64,27 +65,17 @@ public class EnrollmentDAO {
     }
 
     public boolean isUserEnrolled(Integer userId, Integer courseId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM enrollments WHERE user_id = ? AND course_id = ?";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            stmt.setInt(2, courseId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        }
-        return false;
+        return getEnrollmentByUserIdAndCourseId(userId, courseId).isPresent();
     }
 
     public void updateEnrollmentProgress(Integer enrollmentId, Integer newProgress, Boolean isCompleted) throws SQLException {
-        String sql = "UPDATE enrollments SET progress_percentage = ?, is_completed = ? WHERE id = ?";
+        String sql = "UPDATE enrollments SET progress_percentage = ?, is_completed = ?, enrollment_date = ? WHERE id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, newProgress);
             stmt.setBoolean(2, isCompleted);
-            stmt.setInt(3, enrollmentId);
+            stmt.setString(3, LocalDateTime.now().format(DATABASE_DATE_TIME_FORMATTER));
+            stmt.setInt(4, enrollmentId);
             stmt.executeUpdate();
         }
     }
@@ -160,5 +151,29 @@ public class EnrollmentDAO {
         summary.putIfAbsent("Selesai", 0);
         summary.putIfAbsent("Berjalan", 0);
         return summary;
+    }
+
+    public Optional<Enrollment> getEnrollmentByUserIdAndCourseId(Integer userId, Integer courseId) throws SQLException {
+        String sql = "SELECT id, user_id, course_id, enrollment_date, progress_percentage, is_completed FROM enrollments WHERE user_id = ? AND course_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    LocalDateTime enrollmentDateTime = LocalDateTime.parse(rs.getString("enrollment_date"), DATABASE_DATE_TIME_FORMATTER);
+                    Enrollment enrollment = new Enrollment(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("course_id"),
+                        enrollmentDateTime,
+                        rs.getInt("progress_percentage"),
+                        rs.getBoolean("is_completed")
+                    );
+                    return Optional.of(enrollment);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

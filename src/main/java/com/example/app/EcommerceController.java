@@ -1,11 +1,9 @@
-// Ini adalah versi EcommerceController.java yang HARUS ANDA GUNAKAN
 package com.example.app;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
@@ -18,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 
 import com.example.app.model.Course;
@@ -59,7 +58,7 @@ public class EcommerceController {
         courseService = new CourseService();
         enrollmentService = new EnrollmentService();
         courseList = FXCollections.observableArrayList();
-        this.currentUser = LoginController.currentLoggedInUser; // Inisialisasi currentUser di initialize()
+        this.currentUser = LoginController.currentLoggedInUser;
 
         try {
             courseService.initializeDummyCourses();
@@ -92,17 +91,17 @@ public class EcommerceController {
 
                 enrollBtn.setOnAction(e -> {
                     Course course = getTableView().getItems().get(getIndex());
-                    // Pastikan currentUser valid sebelum digunakan
-                    if (LoginController.currentLoggedInUser == null) {
+                    if (LoginController.currentLoggedInUser == null) { // Ambil dari static field
                         showAlert("Peringatan", "Anda harus login untuk mendaftar kelas.", Alert.AlertType.WARNING);
                         return;
                     }
                     try {
+                        // Enroll user ke kelas, ini akan memicu reset jika sudah terdaftar
                         enrollmentService.enrollUserInCourse(LoginController.currentLoggedInUser.getId(), course.getId());
-                        showAlert("Sukses", "Berhasil mendaftar ke kelas " + course.getTitle() + "!", Alert.AlertType.INFORMATION);
-                        loadCourses(); // Refresh untuk update tombol
+                        showAlert("Sukses", "Berhasil mendaftar/mereset kelas " + course.getTitle() + "!", Alert.AlertType.INFORMATION); // Pesan yang lebih informatif
+                        loadCourses(); // Muat ulang untuk update tombol
                     } catch (Exception ex) {
-                        showAlert("Gagal", "Gagal mendaftar kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
+                        showAlert("Gagal/Peringatan", "Gagal mendaftar kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
                         ex.printStackTrace();
                     }
                 });
@@ -114,7 +113,7 @@ public class EcommerceController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    User activeUser = LoginController.currentLoggedInUser; // Ambil user yang aktif dari static field
+                    User activeUser = LoginController.currentLoggedInUser;
                     if (activeUser != null && activeUser.getRole() == Role.ADMIN) {
                         setGraphic(deleteBtn);
                         deleteBtn.setVisible(true);
@@ -162,7 +161,7 @@ public class EcommerceController {
     }
 
     public void initUserData(User user) {
-        this.currentUser = user; // Perbarui currentUser di instance ini
+        this.currentUser = user;
         if (this.currentUser != null) {
             System.out.println("EcommerceController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
             if (currentUser.getRole() == Role.ADMIN) {
@@ -243,10 +242,8 @@ public class EcommerceController {
     private void handleBack(ActionEvent event) {
         try {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            // Masalah 1: Ini adalah titik penting. Kita perlu memanggil setupHomeView
-            // di HomeController untuk memastikan dashboard di-refresh.
-            HomeController homeController = new HomeController(); // Buat instance HomeController
-            homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser); // Panggil setupHomeView
+            HomeController homeController = new HomeController();
+            homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser);
 
         } catch (IOException e) {
             e.printStackTrace();

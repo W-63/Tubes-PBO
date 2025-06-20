@@ -112,4 +112,9 @@ public class UserModuleProgressDAO {
         }
         return 0;
     }
+
+    public void deleteAllUserModuleProgressForCourse(Integer userId, Integer courseId) {
+       
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllUserModuleProgressForCourse'");
+    }
 }
