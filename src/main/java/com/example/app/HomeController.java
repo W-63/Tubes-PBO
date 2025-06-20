@@ -69,8 +69,8 @@ public class HomeController {
         HomeController loadedController = loader.getController();
         if (loadedController != null) {
             loadedController.setWelcomeLabel(this.currentUser);
-            // PENTING: Panggil loadDashboardData setelah welcomeLabel di set
-            loadedController.loadDashboardData(); // Ini yang memastikan dashboard diperbarui
+            
+            loadedController.loadDashboardData(); //  memastikan dashboard diperbarui
         }
 
         Scene scene = new Scene(root);

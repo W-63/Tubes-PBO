@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -10,55 +17,57 @@
             prefWidth="900" prefHeight="700"
             stylesheets="@css/style.css">
 
-    <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20">
+    <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.topAnchor="20">
         <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
+            <Insets bottom="20" left="20" right="20" top="20" />
         </padding>
 
         <Label text="Katalog Kelas Belajar" styleClass="title-label" />
         <Label text="Temukan dan daftar di kelas yang Anda minati." style="-fx-text-fill: grey;" />
+        
+        <HBox spacing="20" VBox.vgrow="ALWAYS">
 
-        <VBox fx:id="formInputCourse" spacing="10" alignment="TOP_LEFT" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;">
-            <Label text="Tambahkan Kelas Baru" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Judul Kelas:" prefWidth="120"/>
-                <TextField fx:id="titleField" promptText="Masukkan judul kelas" HBox.hgrow="ALWAYS"/>
-            </HBox>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Deskripsi:" prefWidth="120"/>
-                <TextArea fx:id="descriptionField" promptText="Masukkan deskripsi kelas" prefRowCount="3" HBox.hgrow="ALWAYS"/>
-            </HBox>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Harga (Rp):" prefWidth="120"/>
-                <TextField fx:id="priceField" promptText="Masukkan harga" HBox.hgrow="ALWAYS"/>
-            </HBox>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Durasi (Minggu):" prefWidth="120"/>
-                <TextField fx:id="durationField" promptText="Durasi dalam minggu" HBox.hgrow="ALWAYS"/>
-            </HBox>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Total Modul:" prefWidth="120"/>
-                <TextField fx:id="modulesField" promptText="Jumlah modul kelas" HBox.hgrow="ALWAYS"/>
-            </HBox>
-            <Button fx:id="addCourseButton" text="Tambah Kelas" styleClass="main-button" onAction="#addCourse"/>
-        </VBox>
+            <VBox fx:id="formInputCourse" alignment="TOP_LEFT" spacing="10" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;" HBox.hgrow="NEVER" prefWidth="350">
+                <Label text="Tambahkan Kelas Baru" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Judul Kelas:" prefWidth="120" />
+                    <TextField fx:id="titleField" HBox.hgrow="ALWAYS" promptText="Masukkan judul kelas" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Deskripsi:" prefWidth="120" />
+                    <TextArea fx:id="descriptionField" HBox.hgrow="ALWAYS" prefRowCount="3" promptText="Masukkan deskripsi kelas" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Harga (Rp):" prefWidth="120" />
+                    <TextField fx:id="priceField" HBox.hgrow="ALWAYS" promptText="Masukkan harga" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Durasi (Minggu):" prefWidth="120" />
+                    <TextField fx:id="durationField" HBox.hgrow="ALWAYS" promptText="Durasi dalam minggu" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Total Modul:" prefWidth="120" />
+                    <TextField fx:id="modulesField" HBox.hgrow="ALWAYS" promptText="Jumlah modul kelas" />
+                </HBox>
+                <Button fx:id="addCourseButton" onAction="#addCourse" styleClass="main-button" text="Tambah Kelas" />
+            </VBox>
 
-        <Region prefHeight="10"/>
-
-        <Label text="Daftar Kelas Tersedia" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="titleColumn" text="Judul Kelas" prefWidth="200"/>
-                <TableColumn fx:id="descriptionColumn" text="Deskripsi" prefWidth="300"/>
-                <TableColumn fx:id="priceColumn" text="Harga" prefWidth="100"/>
-                <TableColumn fx:id="durationColumn" text="Durasi (Minggu)" prefWidth="100"/>
-                <TableColumn fx:id="actionColumn" text="Aksi" prefWidth="100"/>
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-            </columnResizePolicy>
-        </TableView>
-
-        <Button text="Kembali ke Home" styleClass="main-button" onAction="#handleBack" />
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Daftar Kelas Tersedia" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="titleColumn" prefWidth="200" text="Judul Kelas" />
+                        <TableColumn fx:id="descriptionColumn" prefWidth="300" text="Deskripsi" />
+                        <TableColumn fx:id="priceColumn" prefWidth="100" text="Harga" />
+                        <TableColumn fx:id="durationColumn" prefWidth="100" text="Durasi (Minggu)" />
+                        <TableColumn fx:id="actionColumn" prefWidth="100" text="Aksi" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </VBox>
+        </HBox>
+        <Button fx:id="backButton" text="Kembali ke Home" styleClass="main-button" onAction="#handleBack" />
     </VBox>
 </AnchorPane>

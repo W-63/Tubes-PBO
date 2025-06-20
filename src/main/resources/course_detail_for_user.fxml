@@ -15,18 +15,18 @@
         </padding>
 
         <Label text="Detail Kelas" styleClass="title-label" />
-        <Label fx:id="courseTitleLabel" text="Judul Kelas" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
-        <Label fx:id="courseProgressPercentageLabel" text="Progres Kelas: 0%" style="-fx-font-size: 18px; -fx-text-fill: lightgreen;" />
+        <Label fx:id="courseTitleLabel" text="Judul Kelas" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: black;" />
+        <Label fx:id="courseProgressPercentageLabel" text="Progres Kelas: 0%" style="-fx-font-size: 18px; -fx-text-fill: black;" />
 
 
         <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10;">
             <VBox spacing="5">
                 <Label fx:id="courseDescriptionLabel" text="Deskripsi Kelas." style="-fx-text-fill: grey; -fx-wrap-text: true;" prefWidth="400"/>
-                <Label fx:id="coursePriceLabel" text="Harga: Rp0" style="-fx-text-fill: white;"/>
+                <Label fx:id="coursePriceLabel" text="Harga: Rp0" style="-fx-text-fill: black;"/>
             </VBox>
             <VBox spacing="5">
-                <Label fx:id="courseDurationLabel" text="Durasi: 0 Minggu" style="-fx-text-fill: white;"/>
-                <Label fx:id="courseTotalModulesLabel" text="Total Modul: 0" style="-fx-text-fill: white;"/>
+                <Label fx:id="courseDurationLabel" text="Durasi: 0 Minggu" style="-fx-text-fill: black;"/>
+                <Label fx:id="courseTotalModulesLabel" text="Total Modul: 0" style="-fx-text-fill: black;"/>
             </VBox>
         </HBox>
 

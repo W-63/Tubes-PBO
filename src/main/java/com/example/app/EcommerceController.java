@@ -91,15 +91,15 @@ public class EcommerceController {
 
                 enrollBtn.setOnAction(e -> {
                     Course course = getTableView().getItems().get(getIndex());
-                    if (LoginController.currentLoggedInUser == null) { // Ambil dari static field
+                    if (LoginController.currentLoggedInUser == null) { 
                         showAlert("Peringatan", "Anda harus login untuk mendaftar kelas.", Alert.AlertType.WARNING);
                         return;
                     }
                     try {
-                        // Enroll user ke kelas, ini akan memicu reset jika sudah terdaftar
+                        // Enroll user ke kelas
                         enrollmentService.enrollUserInCourse(LoginController.currentLoggedInUser.getId(), course.getId());
                         showAlert("Sukses", "Berhasil mendaftar/mereset kelas " + course.getTitle() + "!", Alert.AlertType.INFORMATION); // Pesan yang lebih informatif
-                        loadCourses(); // Muat ulang untuk update tombol
+                        loadCourses(); 
                     } catch (Exception ex) {
                         showAlert("Gagal/Peringatan", "Gagal mendaftar kelas: " + ex.getMessage(), Alert.AlertType.ERROR);
                         ex.printStackTrace();

@@ -11,16 +11,21 @@ import java.util.Map;
 public class ToDoService {
     private final ToDoDAO todoDAO = new ToDoDAOImpl();
 
-    // --- PERBAIKAN DI SINI: Tambahkan 'throws Exception' ---
-    public void addToDo(ToDoItem todo) throws Exception, SQLException { // Ditambahkan 'Exception'
+    
+    public void addToDo(ToDoItem todo) throws Exception, SQLException { 
         validateToDo(todo);
         todoDAO.addToDo(todo);
     }
 
-    // --- PERBAIKAN DI SINI: Tambahkan 'throws Exception' ---
-    public void updateToDo(ToDoItem todo) throws Exception, SQLException { // Ditambahkan 'Exception'
+    
+    public void updateToDo(ToDoItem todo) throws Exception, SQLException { 
         validateToDo(todo);
-        // todoDAO.updateToDo(todo); // Metode ini mungkin tidak ada di ToDoDAO/ToDoDAOImpl
+        
+    }
+
+    
+    public void updateStatus(int id, boolean status) throws SQLException {
+        todoDAO.updateStatus(id, status);
     }
 
     public void deleteToDo(int id) throws SQLException {
@@ -48,5 +53,9 @@ public class ToDoService {
 
     public Map<String, Integer> getToDoProgressSummary(Integer userId) throws SQLException {
         return todoDAO.getToDoProgressSummaryByUserId(userId);
+    }
+
+    public List<ToDoItem> getUpcomingOrOverdueToDos(int userId) throws SQLException { // <-- Tambahkan ini
+        return todoDAO.getUpcomingOrOverdueToDos(userId);
     }
 }

@@ -5,7 +5,7 @@ import com.example.app.dao.ToDoDAOImpl;
 import com.example.app.model.ToDoItem;
 import com.example.app.model.User;
 import com.example.app.model.Role;
-
+import com.example.app.service.ToDoService; // Import ToDoService
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,11 +19,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List; // Import List
 
 public class DailyActivityController {
 
@@ -41,13 +41,13 @@ public class DailyActivityController {
     @FXML private Button hapusButton;
     @FXML private Button kembaliButton;
 
-    private ToDoDAO todoDAO;
+    private ToDoService todoService; // Gunakan ToDoService
     private ObservableList<ToDoItem> todoList;
     private User currentUser;
 
     @FXML
     public void initialize() {
-        todoDAO = new ToDoDAOImpl();
+        todoService = new ToDoService(); // Inisialisasi ToDoService
         todoList = FXCollections.observableArrayList();
 
         ObservableList<String> kategoriOptions =
@@ -71,7 +71,8 @@ public class DailyActivityController {
             booleanProp.addListener((obs, wasSelected, isNowSelected) -> {
                 todo.setStatus(isNowSelected);
                 try {
-                    todoDAO.updateStatus(todo.getId(), isNowSelected);
+                    // *** Ganti baris ini dengan pemanggilan yang benar ***
+                    todoService.updateStatus(todo.getId(), isNowSelected); // Panggil metode updateStatus dari ToDoService
                 } catch (SQLException e) {
                     tampilkanAlert("Kesalahan Database", "Gagal memperbarui status: " + e.getMessage(), Alert.AlertType.ERROR);
                     booleanProp.set(wasSelected);
@@ -96,19 +97,20 @@ public class DailyActivityController {
         });
 
         muatDataToDo();
+        cekDanTampilkanNotifikasi();
     }
 
     public void initUserData(User user) {
         this.currentUser = user;
         if (this.currentUser != null) {
             System.out.println("DailyActivityController: Diterima user " + currentUser.getUsername() + " dengan peran " + currentUser.getRole());
-
+            cekDanTampilkanNotifikasi();
         }
     }
 
     private void muatDataToDo() {
         try {
-            todoList.setAll(todoDAO.getAllToDos());
+            todoList.setAll(todoService.getAllToDos());
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan", "Gagal memuat data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -144,34 +146,23 @@ public class DailyActivityController {
         }
 
         ToDoItem todo = new ToDoItem(kategori, deskripsi, tanggal, waktu);
+        if (currentUser != null) {
+            todo.setUserId(currentUser.getId()); // Set userId untuk ToDoItem
+        }
 
         try {
-            todoDAO.addToDo(todo);
+            todoService.addToDo(todo);
             tampilkanAlert("Sukses", "Target berhasil ditambahkan.", Alert.AlertType.INFORMATION);
             bersihkanInput();
             muatDataToDo();
+            cekDanTampilkanNotifikasi();
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan Database", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         } catch (Exception e) {
-            tampilkanAlert("Kesalahan", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
+            tampilkanAlert("Kesalahan Validasi", e.getMessage(), Alert.AlertType.WARNING);
             e.printStackTrace();
         }
-
-        try {
-        // Ini adalah tempat panggilan addToDo
-        todoDAO.addToDo(todo); // Sekarang ini bisa melempar Exception dari validasi
-        tampilkanAlert("Sukses", "Target berhasil ditambahkan.", Alert.AlertType.INFORMATION);
-        bersihkanInput();
-            muatDataToDo();
-        } catch (SQLException e) { // Ini hanya menangkap SQLException
-            tampilkanAlert("Kesalahan Database", "Gagal menyimpan data: " + e.getMessage(), Alert.AlertType.ERROR);
-            e.printStackTrace();
-        } catch (Exception e) { // <--- TAMBAHKAN INI UNTUK MENANGKAP VALIDASI EXCEPTION
-            tampilkanAlert("Kesalahan Validasi", e.getMessage(), Alert.AlertType.WARNING); // Tampilkan pesan validasi
-            e.printStackTrace();
-        }
-
     }
 
     @FXML
@@ -183,9 +174,10 @@ public class DailyActivityController {
         }
 
         try {
-            todoDAO.deleteToDo(selected.getId());
+            todoService.deleteToDo(selected.getId());
             tampilkanAlert("Sukses", "Target berhasil dihapus.", Alert.AlertType.INFORMATION);
             muatDataToDo();
+            cekDanTampilkanNotifikasi();
         } catch (SQLException e) {
             tampilkanAlert("Kesalahan Database", "Gagal menghapus data: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -215,12 +207,40 @@ public class DailyActivityController {
         try {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            HomeController homeController = new HomeController();
-            homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser);
+            if (LoginController.currentLoggedInUser != null) {
+                HomeController homeController = new HomeController();
+                homeController.setupHomeView(currentStage, LoginController.currentLoggedInUser);
+            } else {
+                tampilkanAlert("Kesalahan", "Informasi pengguna tidak tersedia. Harap login kembali.", Alert.AlertType.ERROR);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
             tampilkanAlert("Kesalahan Navigasi", "Gagal memuat halaman Beranda: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void cekDanTampilkanNotifikasi() {
+        if (currentUser == null) {
+            System.err.println("cekDanTampilkanNotifikasi: Pengguna belum login atau data pengguna belum diinisialisasi.");
+            return;
+        }
+
+        try {
+            List<ToDoItem> notifications = todoService.getUpcomingOrOverdueToDos(currentUser.getId());
+            if (!notifications.isEmpty()) {
+                StringBuilder notificationMessage = new StringBuilder("Perhatian! Anda memiliki kegiatan yang mendekati/telah melewati tenggat:\n\n");
+                for (ToDoItem item : notifications) {
+                    notificationMessage.append("  - Kategori: ").append(item.getKategori())
+                                       .append(", Deskripsi: ").append(item.getDeskripsi())
+                                       .append(", Tenggat: ").append(item.getTanggal())
+                                       .append(" Pukul ").append(item.getWaktu()).append("\n");
+                }
+                tampilkanAlert("Notifikasi Kegiatan", notificationMessage.toString(), Alert.AlertType.WARNING);
+            }
+        } catch (SQLException e) {
+            tampilkanAlert("Kesalahan Notifikasi", "Gagal mengambil notifikasi: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
         }
     }
 }

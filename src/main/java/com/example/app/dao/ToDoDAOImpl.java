@@ -129,4 +129,36 @@ public class ToDoDAOImpl implements ToDoDAO {
         summary.putIfAbsent("Belum Selesai", 0);
         return summary;
     }
+
+    @Override
+    public List<ToDoItem> getUpcomingOrOverdueToDos(int userId) throws SQLException {
+        List<ToDoItem> todos = new ArrayList<>();
+        // Mengambil item yang belum selesai (status = FALSE) DAN
+        // (tanggal hari ini ATAU tanggal sebelumnya)
+        // ATAU (tanggal besok DAN waktu sebelum sekarang)
+        String sql = "SELECT id, user_id, kategori, deskripsi, tanggal, waktu, status FROM todo_items " +
+                     "WHERE user_id = ? AND status = FALSE AND (" +
+                     " (tanggal = CURDATE() AND waktu <= CURTIME()) OR " + // Lewat tenggat hari ini
+                     " (tanggal < CURDATE()) OR " + // Sudah lewat tanggal
+                     " (tanggal = DATE_ADD(CURDATE(), INTERVAL 1 DAY) AND waktu <= CURTIME()) " + // Tenggat besok, tapi waktunya sudah lewat (opsional, bisa disesuaikan)
+                     ") ORDER BY tanggal ASC, waktu ASC";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    todos.add(new ToDoItem(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("kategori"),
+                        rs.getString("deskripsi"),
+                        rs.getDate("tanggal").toLocalDate(),
+                        rs.getTime("waktu").toLocalTime(),
+                        rs.getBoolean("status")
+                    ));
+                }
+            }
+        }
+        return todos;
+    }
 }

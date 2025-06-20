@@ -11,4 +11,5 @@ public interface ToDoDAO {
     void deleteToDo(int id) throws SQLException;
     void updateStatus(int id, boolean status) throws SQLException;
     Map<String, Integer> getToDoProgressSummaryByUserId(Integer userId) throws SQLException;
+    List<ToDoItem> getUpcomingOrOverdueToDos(int userId) throws SQLException; // <-- Tambahkan ini
 }
